@@ -3,6 +3,9 @@ package org.mz.ditran.core;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
 
 /**
  * @Author: mario
@@ -13,9 +16,20 @@ import org.aspectj.lang.annotation.Aspect;
 @Aspect
 public class DitranAspect {
 
+    @Autowired
+    private PlatformTransactionManager platformTransactionManager;
+
     @Around("@annotation(org.mz.ditran.core.DitranTransactional))")
     public Object ditranAround(ProceedingJoinPoint point)throws Throwable{
-        //todo
+        Class claz = point.getSignature().getDeclaringType();
+        DitranTransactional ditranAnn = (DitranTransactional) claz.getAnnotation(DitranTransactional.class);
+        RpcType rpcType = ditranAnn.value();
+        Propagation propagation = ditranAnn.propagation();
+        try{
+            Object res = point.proceed();
+        }catch (Exception e){
+
+        }
         return null;
     }
 }

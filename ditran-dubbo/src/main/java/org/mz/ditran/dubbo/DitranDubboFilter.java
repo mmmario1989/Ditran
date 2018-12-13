@@ -1,4 +1,4 @@
-package org.mz.ditran;
+package org.mz.ditran.dubbo;
 
 import com.alibaba.dubbo.rpc.*;
 

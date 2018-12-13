@@ -3,7 +3,7 @@ package org.mz.ditran.dubbo.active;
 import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
-import org.mz.ditran.DitranDubboFilter;
+import org.mz.ditran.dubbo.DitranDubboFilter;
 
 /**
  * @Author: jsonz
