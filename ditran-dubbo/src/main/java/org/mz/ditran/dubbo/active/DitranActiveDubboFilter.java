@@ -1,4 +1,4 @@
-package org.mz.ditran.active;
+package org.mz.ditran.dubbo.active;
 
 import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.Invoker;

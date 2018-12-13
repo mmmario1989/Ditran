@@ -1,4 +1,4 @@
-package org.mz.ditran.passive;
+package org.mz.ditran.dubbo.passive;
 
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Activate;

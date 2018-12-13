@@ -1,5 +1,7 @@
 package org.mz.ditran.core;
 
+import org.springframework.transaction.annotation.Propagation;
+
 /**
  * @Author: mario
  * @Email: mmmario@foxmail.com
@@ -8,5 +10,8 @@ package org.mz.ditran.core;
  */
 public @interface DitranTransactional {
 
+    RpcType value();
+
+    Propagation propagation() default Propagation.REQUIRED;
 
 }
