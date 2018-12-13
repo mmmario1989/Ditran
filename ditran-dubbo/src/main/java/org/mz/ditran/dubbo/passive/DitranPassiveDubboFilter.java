@@ -1,4 +1,4 @@
-package org.mz.ditran.passive;
+package org.mz.ditran.dubbo.passive;
 
 import org.mz.ditran.DitranDubboFilter;
 
