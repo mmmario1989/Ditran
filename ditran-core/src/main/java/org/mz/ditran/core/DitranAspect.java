@@ -1,4 +1,4 @@
-package com.mz.ditran.core;
+package org.mz.ditran.core;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -13,7 +13,7 @@ import org.aspectj.lang.annotation.Aspect;
 @Aspect
 public class DitranAspect {
 
-    @Around("@annotation(com.mz.ditran.core.DitranTransactional))")
+    @Around("@annotation(org.mz.ditran.core.DitranTransactional))")
     public Object ditranAround(ProceedingJoinPoint point)throws Throwable{
         //todo
         return null;
