@@ -15,5 +15,37 @@
         <module>ditran-core</module>
     </modules>
 
+    <properties>
+        <dubbo.version>2.6.5</dubbo.version>
+        <curator.version>2.9.1</curator.version>
+        <netty.version>3.10.6.Final</netty.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>dubbo</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-framework</artifactId>
+                <version>${curator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-client</artifactId>
+                <version>${curator.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>
