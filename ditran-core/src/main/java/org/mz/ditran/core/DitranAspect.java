@@ -3,6 +3,8 @@ package org.mz.ditran.core;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.mz.ditran.common.DitranThreadContext;
+import org.mz.ditran.common.enums.RpcType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -28,8 +30,11 @@ public class DitranAspect {
         RpcType rpcType = ditranAnn.value();
         Propagation propagation = ditranAnn.propagation();
         DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
-        TransactionStatus status = platformTransactionManager.getTransaction(definition);
         definition.setPropagationBehavior(propagation.value());
+        //begin transaction
+        TransactionStatus status = platformTransactionManager.getTransaction(definition);
+        //set context
+        DitranThreadContext.set(rpcType, propagation != Propagation.NEVER);
         try{
             Object res = point.proceed();
             //todo block here waiting for passives success
@@ -40,6 +45,8 @@ public class DitranAspect {
             //todo notice zk the failure
             platformTransactionManager.rollback(status);
             throw e;
+        }finally {
+            DitranThreadContext.clear();
         }
     }
 }

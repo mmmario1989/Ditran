@@ -1,4 +1,4 @@
-package org.mz.ditran.core;
+package org.mz.ditran.common.enums;
 
 /**
  * @Author: mario

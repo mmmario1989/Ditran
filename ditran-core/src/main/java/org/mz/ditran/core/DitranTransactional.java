@@ -1,5 +1,6 @@
 package org.mz.ditran.core;
 
+import org.mz.ditran.common.enums.RpcType;
 import org.springframework.transaction.annotation.Propagation;
 
 import java.lang.annotation.ElementType;
