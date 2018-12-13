@@ -16,7 +16,7 @@ import com.alibaba.dubbo.rpc.Result;
  * @Author: jsonz
  * @Date: 2018-12-13 16:51
  */
-@Activate(group = Constants.PROVIDER_SIDE, order = -5000)
+@Activate(group = Constants.PROVIDER)
 public class DitranPassiveDubboFilter extends DitranDubboFilter {
 
 
