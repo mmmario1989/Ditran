@@ -23,10 +23,10 @@ public class DitranAspect {
     @Autowired
     private PlatformTransactionManager platformTransactionManager;
 
-    @Around("@annotation(org.mz.ditran.core.DitranTransactional))")
+    @Around("@annotation(org.mz.ditran.core.DiTransactional))")
     public Object ditranAround(ProceedingJoinPoint point)throws Throwable{
         Class claz = point.getSignature().getDeclaringType();
-        DitranTransactional ditranAnn = (DitranTransactional) claz.getAnnotation(DitranTransactional.class);
+        DiTransactional ditranAnn = (DiTransactional) claz.getAnnotation(DiTransactional.class);
         RpcType rpcType = ditranAnn.value();
         Propagation propagation = ditranAnn.propagation();
         DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
