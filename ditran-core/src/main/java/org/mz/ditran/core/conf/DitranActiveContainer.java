@@ -8,7 +8,16 @@ import org.mz.ditran.core.DitranAspect;
  * @Date: 2018-12-13 6:23 PM
  * @Description:
  */
-public class DitranActiveConfiguration extends DitranConfiguration{
+public class DitranActiveContainer extends DitranContainer {
 
     private DitranAspect ditranAspect;
+
+    public DitranActiveContainer(DitranZKConfig config) {
+        super(config);
+    }
+
+    @Override
+    protected void check() {
+
+    }
 }
