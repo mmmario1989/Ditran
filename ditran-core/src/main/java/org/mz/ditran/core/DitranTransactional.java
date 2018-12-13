@@ -1,4 +1,4 @@
-package com.mz.ditran.core;
+package org.mz.ditran.core;
 
 /**
  * @Author: mario
