@@ -22,6 +22,12 @@
             <artifactId>aspectjweaver</artifactId>
             <version>1.8.9</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-tx -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>4.3.20.RELEASE</version>
+        </dependency>
 
     </dependencies>
 
