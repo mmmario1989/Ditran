@@ -39,7 +39,7 @@ public abstract class DitransactionManagerAdapter implements DitransactionManage
     }
 
     @Override
-    public void prepare() throws DitranZKException {
+    public void prepare() throws Exception {
         zkClient.update(ditranInfo.getZkPath().getFullPath(), DitranConstants.ZK_NODE_SUCCESS_VALUE);
     }
 
