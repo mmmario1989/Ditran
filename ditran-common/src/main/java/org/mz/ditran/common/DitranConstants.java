@@ -10,5 +10,5 @@ public class DitranConstants {
     public static String PASSIVE_NODE = "passive";
     public static String ZK_NODE_FAIL_VALUE = "failed";
     public static String ZK_NODE_SUCCESS_VALUE = "succeed";
-    public static String TRANSACTION_PATH = "transaction-path";
+    public static String ACTIVE_PATH_KEY = "active_path_key";
 }

@@ -28,9 +28,9 @@ public class ActiveDitransactionManager extends DitransactionManagerAdapter {
     @Override
     public DitranInfo begin(String methodName, Propagation propagation) throws Exception {
         String path = zkClient.getClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath(zkClient.getPrefix()+"/"+methodName);
-        DitranContext.setTransactionPath(path);
         ZkPath zkPath = new ZkPath(path);
         zkPath.setNode(DitranConstants.ACTIVE_NODE);
+        DitranContext.setZkPath(zkPath);
         TransactionStatus transactionStatus = beginLocal(propagation);
         return DitranInfo.builder()
                 .methodName(methodName)

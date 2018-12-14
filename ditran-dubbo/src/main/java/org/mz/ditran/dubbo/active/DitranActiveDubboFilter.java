@@ -22,13 +22,13 @@ public class DitranActiveDubboFilter extends DitranDubboFilter {
 
     @Override
     protected boolean isDitran() {
-        return DitranContext.get().getTransactionPath()!=null;
+        return DitranContext.get().getZkPath()!=null;
     }
 
     @Override
     public Result doInvoke(Invoker<?> invoker, Invocation invocation) {
         Map<String,String> attach = RpcContext.getContext().getAttachments();
-        attach.put(DitranConstants.TRANSACTION_PATH,DitranContext.get().getTransactionPath());
+        attach.put(DitranConstants.ACTIVE_PATH_KEY,DitranContext.get().getZkPath().getFullPath());
         return invoker.invoke(invocation);
     }
 

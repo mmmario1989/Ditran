@@ -2,6 +2,7 @@ package org.mz.ditran.common;
 
 
 import lombok.Getter;
+import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.common.enums.RpcType;
 
 /**
@@ -15,15 +16,15 @@ public class DitranContext {
     private static final ThreadLocal<DitranContext> HOLDER = new ThreadLocal<>();
 
     private RpcType rpcType;
-    private String transactionPath;
+    private ZkPath zkPath;
 
 
     public static void setRpcType(RpcType rpcType){
         get().rpcType = rpcType;
     }
 
-    public static void setTransactionPath(String transactionPath){
-        get().transactionPath = transactionPath;
+    public static void setZkPath(ZkPath zkPath){
+        get().zkPath = zkPath;
     }
 
     public static DitranContext get(){
