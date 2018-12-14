@@ -24,7 +24,7 @@ public abstract class DitranZKHandler {
      * 检查节点状态
      * @return
      */
-    public abstract boolean check();
+    public abstract boolean check() throws DitranZKException;
 
     /**
      * 写节点状态到ZK

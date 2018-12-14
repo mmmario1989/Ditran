@@ -33,7 +33,7 @@ public class DitranZKClient {
      * 向某个节点写数据
      * @param key
      */
-    public void persist(final String key, final String value) {
+    public void persist(final String key, final String value) throws DitranZKException {
         try {
             if (isExisted(key)) {
                 update(key, value);
@@ -52,7 +52,7 @@ public class DitranZKClient {
      * @param key
      * @param value
      */
-    public void update(final String key, final String value) {
+    public void update(final String key, final String value) throws DitranZKException {
         try {
             client.setData().forPath(key, value.getBytes(Charsets.UTF_8));
         } catch (Exception e) {
@@ -79,7 +79,7 @@ public class DitranZKClient {
      * @param key
      * @return
      */
-    public String get(final String key) {
+    public String get(final String key) throws DitranZKException {
         try {
             if (isExisted(key)) {
                 byte[] bytes = client.getData().forPath(key);

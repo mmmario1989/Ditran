@@ -4,10 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.mz.ditran.common.Constants;
 import org.mz.ditran.common.exception.DitranZKException;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * @Author: jsonz
@@ -46,16 +43,26 @@ public class DitranZKPassiveHandler extends DitranZKHandler {
      * @return
      */
     @Override
-    public boolean check() {
+    public boolean check() throws DitranZKException {
         Future<Boolean> future = Executors.newFixedThreadPool(1).submit(new ActiveStatusCheckTask(client, activeKey));
         try {
             return future.get(client.getPassiveTimeout(), TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            log.error("Check active exception.", e.getMessage());
+        } catch (InterruptedException e) {
+            log.error(e.getMessage());
+            throw new DitranZKException(String.format("Check active status failed.Msg: %s", e.getMessage()), e);
+        } catch (ExecutionException e) {
+            log.error(e.getMessage());
+            throw new DitranZKException(String.format("Check active status failed.Msg: %s", e.getMessage()), e);
+        } catch (TimeoutException e) {
+            return false;
         }
-        return false;
     }
 
+    /**
+     * 向Passive节点中写入值
+     * @param value
+     * @throws DitranZKException
+     */
     @Override
     public void write(String value) throws DitranZKException {
         client.update(this.passiveKey, value);
@@ -66,7 +73,6 @@ public class DitranZKPassiveHandler extends DitranZKHandler {
      */
     private static class ActiveStatusCheckTask implements Callable<Boolean> {
         private DitranZKClient client;
-
         private String activeKey;
 
         public ActiveStatusCheckTask(DitranZKClient client, String activeKey) {
@@ -78,7 +84,13 @@ public class DitranZKPassiveHandler extends DitranZKHandler {
         public Boolean call() throws Exception {
             String result;
             do {
-                result = client.get(this.activeKey);
+                try {
+                    TimeUnit.MILLISECONDS.sleep(100);
+                    result = client.get(this.activeKey);
+                } catch (Exception e) {
+                    log.error("Some unexpected exception happend.", e);
+                    return false;
+                }
             } while(!Constants.ZK_NODE_SUCCESS_VALUE.equals(result));
 
             return true;
