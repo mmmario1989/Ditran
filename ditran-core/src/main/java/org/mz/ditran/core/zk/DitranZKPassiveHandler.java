@@ -1,7 +1,7 @@
 package org.mz.ditran.core.zk;
 
 import lombok.extern.slf4j.Slf4j;
-import org.mz.ditran.common.Constants;
+import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.exception.DitranZKException;
 
 import java.util.concurrent.*;
@@ -21,18 +21,18 @@ public class DitranZKPassiveHandler extends DitranZKHandler {
         super(client);
         this.passiveKey = new StringBuilder().append(this.client.getPrefix())
                 .append("/").append(transactionId)
-                .append("/").append(Constants.PASSIVE_NODE)
+                .append("/").append(DitranConstants.PASSIVE_NODE)
                 .append("/").append(node)
                 .toString();
         this.activeKey = new StringBuilder().append(this.client.getPrefix())
                 .append("/").append(transactionId)
-                .append("/").append(Constants.ACTIVE_NODE)
+                .append("/").append(DitranConstants.ACTIVE_NODE)
                 .toString();
     }
 
     @Override
     public void register() throws DitranZKException {
-        client.persist(this.passiveKey, Constants.ZK_NODE_FAIL_VALUE);
+        client.persist(this.passiveKey, DitranConstants.ZK_NODE_FAIL_VALUE);
     }
 
     /**
@@ -91,7 +91,7 @@ public class DitranZKPassiveHandler extends DitranZKHandler {
                     log.error("Some unexpected exception happend.", e);
                     return false;
                 }
-            } while(!Constants.ZK_NODE_SUCCESS_VALUE.equals(result));
+            } while(!DitranConstants.ZK_NODE_SUCCESS_VALUE.equals(result));
 
             return true;
         }

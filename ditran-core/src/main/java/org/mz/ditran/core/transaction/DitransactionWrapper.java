@@ -1,6 +1,5 @@
 package org.mz.ditran.core.transaction;
 
-import com.google.common.base.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.mz.ditran.common.Handler;
 import org.mz.ditran.common.entity.DitranInfo;

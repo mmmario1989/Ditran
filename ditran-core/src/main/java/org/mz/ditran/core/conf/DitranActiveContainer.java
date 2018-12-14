@@ -29,7 +29,9 @@ public class DitranActiveContainer extends DitranContainer {
     @Override
     protected void check() {
         super.check();
-        Assert.notNull(ditranAspect,"ditranAspect can not be null");
+        if(ditranAspect==null){
+            throw new IllegalArgumentException("ditranAspect can not be null");
+        }
     }
 
 

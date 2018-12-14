@@ -9,6 +9,8 @@ import org.mz.ditran.core.conf.DitranActiveContainer;
 import org.mz.ditran.core.conf.DitranContainer;
 import org.mz.ditran.core.transaction.DitransactionManager;
 import org.mz.ditran.core.transaction.DitransactionWrapper;
+import org.mz.ditran.common.DitranConstants;
+import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.dubbo.DitranDubboFilter;
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Activate;
@@ -32,7 +34,7 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
 
     @Override
     protected boolean isDitran() {
-        return StringUtils.isNotBlank(RpcContext.getContext().getAttachment(org.mz.ditran.common.Constants.DUBBO_ATTACHMENTS_KEY));
+        return StringUtils.isNotBlank(RpcContext.getContext().getAttachment(DitranConstants.ACTIVE_PATH_KEY));
     }
 
     @Override
