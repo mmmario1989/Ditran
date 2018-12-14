@@ -11,11 +11,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.Handler;
 import org.mz.ditran.common.entity.ResultHolder;
-import org.mz.ditran.core.conf.DitranActiveContainer;
+import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.core.conf.DitranContainer;
+import org.mz.ditran.core.conf.DitranPassiveContainer;
 import org.mz.ditran.core.transaction.DitransactionManager;
 import org.mz.ditran.core.transaction.DitransactionWrapper;
+import org.mz.ditran.core.transaction.impl.PassiveDitransactionManager;
 import org.mz.ditran.dubbo.DitranDubboFilter;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 
 import java.util.concurrent.Executors;
@@ -40,10 +43,13 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
     }
 
     @Override
-    public Result doInvoke(Invoker<?> invoker, Invocation invocation) {
-        String transactionId = RpcContext.getContext().getAttachment(DitranConstants.ACTIVE_PATH_KEY);
-        DitransactionManager manager = DitranContainer.getConfig(DitranActiveContainer.class).getDitransactionManager();
-        ResultHolder<Result> holder = new ResultHolder<>();
+    public Result doInvoke(final Invoker<?> invoker, final Invocation invocation) {
+        final String activePathStr = RpcContext.getContext().getAttachment(DitranConstants.ACTIVE_PATH_KEY);
+        final ZkPath activePath = new ZkPath(activePathStr);
+        final DitranContainer container =DitranContainer.getConfig(DitranPassiveContainer.class);
+        PlatformTransactionManager platformTransactionManager = container.getTransactionManager();
+        final DitransactionManager manager = new PassiveDitransactionManager(platformTransactionManager,container.getZkClient(),activePath);
+        final ResultHolder<Result> holder = new ResultHolder<>();
         Executors.newFixedThreadPool(1).execute(new Runnable() {
             @Override
             public void run() {
@@ -56,13 +62,12 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
                             holder.setEmpty(false);
                             return result;
                         }
-                    }).with(manager).start(transactionId + "/" + invocation.getMethodName(), Propagation.REQUIRED, invocation);
+                    }).with(manager).start(invocation.getMethodName(), Propagation.REQUIRED, invocation);
                 } catch (Throwable e) {
                     log.error(e.getMessage(), e);
                 }
             }
         });
-
         while (holder.isEmpty());
         return holder.getT();
     }
