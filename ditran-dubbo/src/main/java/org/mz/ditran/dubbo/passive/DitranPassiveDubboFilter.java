@@ -32,7 +32,7 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
     @Override
     public Result doInvoke(Invoker<?> invoker, Invocation invocation) {
         String path = invocation.getAttachment(DitranConstants.ACTIVE_PATH_KEY);
-        ZkPath zkPath = new ZkPath(path);
+        ZkPath activePath = new ZkPath(path);
 
         //todo
         return null;
