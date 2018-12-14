@@ -2,9 +2,11 @@ package org.mz.ditran.core.zk;
 
 import com.google.common.base.Charsets;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.CreateMode;
 import org.mz.ditran.common.exception.DitranZKException;
+import org.mz.ditran.core.conf.DitranZKConfig;
 
 /**
  * @Author: jsonz
@@ -19,9 +21,12 @@ public class DitranZKClient {
 
     private String prefix;
 
-    public DitranZKClient(CuratorFramework client, String namespace) {
+    private DitranZKConfig config;
+
+    public DitranZKClient(CuratorFramework client, DitranZKConfig config) {
         this.client = client;
-        this.prefix = ROOT + namespace;
+        this.prefix = ROOT + config.getNamespace();
+        this.config = config;
     }
 
     /**
@@ -76,8 +81,12 @@ public class DitranZKClient {
      */
     public String get(final String key) {
         try {
-            byte[] bytes = client.getData().forPath(key);
-            return new String(bytes);
+            if (isExisted(key)) {
+                byte[] bytes = client.getData().forPath(key);
+                return new String(bytes);
+            }
+
+            return StringUtils.EMPTY;
         } catch (Exception e) {
             throw new DitranZKException(String.format("Get data from zk failed.Path: %s.", key), e);
         }
@@ -89,5 +98,13 @@ public class DitranZKClient {
      */
     public String getPrefix() {
         return prefix;
+    }
+
+    /**
+     * 获取passive端超时时间
+     * @return
+     */
+    public long getPassiveTimeout() {
+        return config.getPassiveTimeoutMilliseconds();
     }
 }
