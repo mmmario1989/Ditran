@@ -1,5 +1,6 @@
 package org.mz.ditran.common;
 
+
 import org.mz.ditran.common.enums.RpcType;
 
 /**

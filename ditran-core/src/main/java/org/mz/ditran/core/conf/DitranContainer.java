@@ -2,7 +2,9 @@ package org.mz.ditran.core.conf;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
@@ -14,9 +16,12 @@ import org.apache.zookeeper.data.ACL;
 import org.mz.ditran.common.exception.DitranZKException;
 import org.mz.ditran.core.zk.DitranZKClient;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -30,22 +35,25 @@ import java.util.concurrent.TimeUnit;
  * @Description:
  */
 @Slf4j
+@Getter
+@Component
 public abstract class DitranContainer implements ApplicationContextAware {
 
 
     private static ApplicationContext context;
 
+    protected static PlatformTransactionManager transactionManager;
+
     private CuratorFramework client;
 
-    private DitranZKClient ditranZKClient;
+    protected DitranZKClient ditranZKClient;
 
-    protected DitranZKConfig config;
+    private DitranZKConfig config;
 
-    protected PlatformTransactionManager transactionManager;
-
+    @Autowired
     public DitranContainer(DitranZKConfig config, PlatformTransactionManager transactionManager) {
         this.config = config;
-        this.transactionManager = transactionManager;
+        DitranContainer.transactionManager = transactionManager;
     }
 
     /**
@@ -125,5 +133,18 @@ public abstract class DitranContainer implements ApplicationContextAware {
      * 报错跑出RuntimeException
      *
      */
-    protected abstract void check();
+    protected void check(){
+        if (config == null) {
+            throw new IllegalArgumentException("Zk config is null!");
+        }
+        if (StringUtils.isBlank(config.getServerLists()) || StringUtils.isBlank(config.getNamespace())) {
+            throw new IllegalArgumentException("Zk config missing server list or namespace!");
+        }
+        Assert.notNull(transactionManager,"transactionManager can not be null");
+    }
+
+
+    public static PlatformTransactionManager getTransactionManager(){
+        return transactionManager;
+    }
 }

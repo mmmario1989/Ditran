@@ -5,7 +5,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.mz.ditran.common.DitranThreadContext;
 import org.mz.ditran.common.enums.RpcType;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mz.ditran.core.conf.DitranContainer;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
@@ -20,11 +20,10 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 @Aspect
 public class DitranAspect {
 
-    @Autowired
-    private PlatformTransactionManager platformTransactionManager;
 
     @Around("@annotation(org.mz.ditran.core.DiTransactional))")
     public Object ditranAround(ProceedingJoinPoint point)throws Throwable{
+        PlatformTransactionManager transactionManager = DitranContainer.getTransactionManager();
         Class claz = point.getSignature().getDeclaringType();
         DiTransactional ditranAnn = (DiTransactional) claz.getAnnotation(DiTransactional.class);
         RpcType rpcType = ditranAnn.value();
@@ -32,18 +31,18 @@ public class DitranAspect {
         DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
         definition.setPropagationBehavior(propagation.value());
         //begin transaction
-        TransactionStatus status = platformTransactionManager.getTransaction(definition);
+        TransactionStatus status = transactionManager.getTransaction(definition);
         //set context
         DitranThreadContext.set(rpcType, propagation != Propagation.NEVER);
         try{
             Object res = point.proceed();
-            //todo block here waiting for passives success
-            platformTransactionManager.commit(status);
+            //todo check if passives succeed
+            transactionManager.commit(status);
             //todo notice zk the success
             return res;
         }catch (Exception e){
             //todo notice zk the failure
-            platformTransactionManager.rollback(status);
+            transactionManager.rollback(status);
             throw e;
         }finally {
             DitranThreadContext.clear();
