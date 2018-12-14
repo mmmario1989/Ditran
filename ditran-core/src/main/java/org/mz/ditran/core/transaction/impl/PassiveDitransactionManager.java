@@ -1,13 +1,17 @@
 package org.mz.ditran.core.transaction.impl;
 
 import org.mz.ditran.common.DitranConstants;
+import org.mz.ditran.common.Handler;
 import org.mz.ditran.common.entity.DitranInfo;
 import org.mz.ditran.common.entity.ZkPath;
+import org.mz.ditran.core.BlockingChecker;
 import org.mz.ditran.core.transaction.DitransactionManagerAdapter;
 import org.mz.ditran.core.zk.DitranZKClient;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: mario
@@ -39,12 +43,24 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
 
     @Override
     public boolean listen() throws Exception{
-        return false;
+        return new BlockingChecker<String, Boolean>(activePath.getFullPath(), false).blocking(new Handler<String, Boolean>() {
+            @Override
+            public Boolean handle(String key) throws Throwable {
+                String result;
+                do {
+                    TimeUnit.MILLISECONDS.sleep(100);
+                    result = zkClient.get(key);
+                } while (!DitranConstants.ZK_NODE_SUCCESS_VALUE.equals(result));
+
+                return true;
+            }
+        }, zkClient.getPassiveTimeout());
     }
 
 
     @Override
     public void commit() throws Exception{
-
+        transactionManager.commit(ditranInfo.getTransactionStatus());
+        super.prepare();
     }
 }
