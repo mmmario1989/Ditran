@@ -5,7 +5,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.mz.ditran.common.DitranContext;
 import org.mz.ditran.common.Handler;
-import org.mz.ditran.common.enums.RpcType;
 import org.mz.ditran.core.conf.DitranActiveContainer;
 import org.mz.ditran.core.conf.DitranContainer;
 import org.mz.ditran.core.transaction.DitransactionManager;
@@ -30,10 +29,7 @@ public class DitranAspect {
     public Object ditranAround(final ProceedingJoinPoint point)throws Throwable{
         Class claz = point.getSignature().getDeclaringType();
         DiTransactional ditranAnn = (DiTransactional) claz.getAnnotation(DiTransactional.class);
-        RpcType rpcType = ditranAnn.value();
         Propagation propagation = ditranAnn.propagation();
-        //set context
-        DitranContext.setRpcType(rpcType);
         DitranContainer container = DitranContainer.getConfig(DitranActiveContainer.class);
         PlatformTransactionManager platformTransactionManager = container.getTransactionManager();
         DitransactionManager manager = new ActiveDitransactionManager(platformTransactionManager,container.getZkClient());

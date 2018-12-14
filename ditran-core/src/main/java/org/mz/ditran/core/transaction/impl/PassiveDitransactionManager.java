@@ -42,6 +42,7 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
         return false;
     }
 
+
     @Override
     public void commit() throws Exception{
 

@@ -3,7 +3,6 @@ package org.mz.ditran.common;
 
 import lombok.Getter;
 import org.mz.ditran.common.entity.ZkPath;
-import org.mz.ditran.common.enums.RpcType;
 
 /**
  * @Author: mario
@@ -15,13 +14,7 @@ import org.mz.ditran.common.enums.RpcType;
 public class DitranContext {
     private static final ThreadLocal<DitranContext> HOLDER = new ThreadLocal<>();
 
-    private RpcType rpcType;
     private ZkPath zkPath;
-
-
-    public static void setRpcType(RpcType rpcType){
-        get().rpcType = rpcType;
-    }
 
     public static void setZkPath(ZkPath zkPath){
         get().zkPath = zkPath;

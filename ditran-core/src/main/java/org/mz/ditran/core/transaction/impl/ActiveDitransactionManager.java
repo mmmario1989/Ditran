@@ -11,6 +11,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 
+import java.util.List;
+
 /**
  * @Author: mario
  * @Email: mmmario@foxmail.com
@@ -40,12 +42,30 @@ public class ActiveDitransactionManager extends DitransactionManagerAdapter {
     }
 
     @Override
+    public void prepare() throws Exception {
+        //do nothing
+    }
+
+    @Override
     public boolean listen() throws Exception{
-        return false;
+        List<String> childs = zkClient.getClient().getChildren().forPath(ditranInfo.getZkPath().getTransactionPath());
+        for (String child : childs) {
+            ZkPath childPath = new ZkPath(child);
+            String node = childPath.getNode();
+            if(node.startsWith(DitranConstants.ACTIVE_NODE)){
+                continue;
+            }
+            String res = zkClient.get(childPath.getFullPath());
+            if(!DitranConstants.ZK_NODE_SUCCESS_VALUE.equals(res)){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public void commit() throws Exception{
-
+        transactionManager.commit(ditranInfo.getTransactionStatus());
+        super.prepare();
     }
 }

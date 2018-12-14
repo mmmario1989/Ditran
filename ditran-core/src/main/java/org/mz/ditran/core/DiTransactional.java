@@ -1,6 +1,5 @@
 package org.mz.ditran.core;
 
-import org.mz.ditran.common.enums.RpcType;
 import org.springframework.transaction.annotation.Propagation;
 
 import java.lang.annotation.ElementType;
@@ -17,8 +16,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DiTransactional {
-
-    RpcType value();
 
     Propagation propagation() default Propagation.REQUIRED;
 
