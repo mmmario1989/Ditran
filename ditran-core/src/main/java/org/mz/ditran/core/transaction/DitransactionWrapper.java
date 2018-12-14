@@ -2,9 +2,7 @@ package org.mz.ditran.core.transaction;
 
 import lombok.extern.slf4j.Slf4j;
 import org.mz.ditran.common.Handler;
-import org.mz.ditran.common.entity.DitranInfo;
 import org.mz.ditran.common.entity.NodeInfo;
-import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.common.exception.DitransactionException;
 import org.springframework.transaction.annotation.Propagation;
 
