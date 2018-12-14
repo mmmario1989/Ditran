@@ -51,7 +51,7 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
         final ResultHolder<Result> holder = new ResultHolder<>();
 
         // 构建Passive节点信息.
-        NodeInfo nodeInfo = NodeInfo.builder()
+        final NodeInfo nodeInfo = NodeInfo.builder()
                 .className(invoker.getInterface().getSimpleName())
                 .host(InetAddress.getLocalHost().getHostAddress())
                 .methodName(invocation.getMethodName())

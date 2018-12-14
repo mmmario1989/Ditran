@@ -39,6 +39,8 @@ public class DitranAspect {
         }
         DiTransactional ditranAnn = (DiTransactional) claz.getAnnotation(DiTransactional.class);
         Propagation propagation = ditranAnn.propagation();
+        long timeout =  ditranAnn.timeout();
+        DitranContext.setTimeout(timeout);
         DitranContainer container = DitranContainer.getConfig(DitranActiveContainer.class);
         PlatformTransactionManager platformTransactionManager = container.getTransactionManager();
         DitransactionManager manager = new ActiveDitransactionManager(platformTransactionManager,container.getZkClient());

@@ -16,8 +16,14 @@ public class DitranContext {
 
     private ZkPath zkPath;
 
+    private long timeout;
+
     public static void setZkPath(ZkPath zkPath){
         get().zkPath = zkPath;
+    }
+
+    public static void setTimeout(long timeout){
+        get().timeout = timeout;
     }
 
     public static DitranContext get(){
