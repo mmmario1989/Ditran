@@ -4,6 +4,7 @@ import org.apache.zookeeper.CreateMode;
 import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.DitranContext;
 import org.mz.ditran.common.entity.DitranInfo;
+import org.mz.ditran.common.entity.NodeInfo;
 import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.core.transaction.DitransactionManagerAdapter;
 import org.mz.ditran.core.zk.DitranZKClient;
@@ -28,14 +29,14 @@ public class ActiveDitransactionManager extends DitransactionManagerAdapter {
     }
 
     @Override
-    public void begin(String methodName, Propagation propagation) throws Exception {
-        String path = zkClient.getClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath(zkClient.getPrefix()+"/"+methodName);
+    public void begin(NodeInfo nodeInfo, Propagation propagation) throws Exception {
+        String path = zkClient.getClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath(zkClient.getPrefix()+"/"+nodeInfo.getClassName()+"_"+nodeInfo.getMethodName());
         ZkPath zkPath = new ZkPath(path);
         zkPath.setNode(DitranConstants.ACTIVE_NODE);
         DitranContext.setZkPath(zkPath);
         TransactionStatus transactionStatus = beginLocal(propagation);
         ditranInfo =  DitranInfo.builder()
-                .methodName(methodName)
+                .nodeInfo(nodeInfo)
                 .zkPath(zkPath)
                 .transactionStatus(transactionStatus)
                 .build();
@@ -55,8 +56,8 @@ public class ActiveDitransactionManager extends DitransactionManagerAdapter {
             if(node.startsWith(DitranConstants.ACTIVE_NODE)){
                 continue;
             }
-            String res = zkClient.get(childPath.getFullPath());
-            if(!DitranConstants.ZK_NODE_SUCCESS_VALUE.equals(res)){
+            NodeInfo nodeInfo = zkClient.getNodeInfo(childPath.getFullPath());
+            if(!DitranConstants.ZK_NODE_SUCCESS_VALUE.equals(nodeInfo.getStatus())){
                 return false;
             }
         }

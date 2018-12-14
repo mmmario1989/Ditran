@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.CreateMode;
+import org.mz.ditran.common.entity.NodeInfo;
 import org.mz.ditran.common.exception.DitranZKException;
 import org.mz.ditran.core.conf.DitranZKConfig;
 
@@ -92,6 +93,11 @@ public class DitranZKClient {
         } catch (Exception e) {
             throw new DitranZKException(String.format("Get data from zk failed.Path: %s.", key), e);
         }
+    }
+
+    public NodeInfo getNodeInfo(String fullPath) throws DitranZKException {
+        String res = this.get(fullPath);
+        return NodeInfo.parse(res);
     }
 
 

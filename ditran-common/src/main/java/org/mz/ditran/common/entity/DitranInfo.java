@@ -16,7 +16,8 @@ public class DitranInfo {
 
     private ZkPath zkPath;
 
-    private String methodName;
+    private NodeInfo nodeInfo;
 
     private TransactionStatus transactionStatus;
+
 }

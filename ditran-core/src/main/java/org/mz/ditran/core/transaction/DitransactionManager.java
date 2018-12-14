@@ -1,5 +1,6 @@
 package org.mz.ditran.core.transaction;
 
+import org.mz.ditran.common.entity.NodeInfo;
 import org.springframework.transaction.annotation.Propagation;
 
 /**
@@ -10,7 +11,7 @@ import org.springframework.transaction.annotation.Propagation;
  */
 public interface DitransactionManager  {
 
-    void begin(String methodName, Propagation propagation) throws Exception;
+    void begin(NodeInfo nodeInfo, Propagation propagation) throws Exception;
 
     void regist() throws Exception;
 

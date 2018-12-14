@@ -3,6 +3,7 @@ package org.mz.ditran.core.transaction;
 import org.apache.zookeeper.CreateMode;
 import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.entity.DitranInfo;
+import org.mz.ditran.common.entity.NodeInfo;
 import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.common.exception.DitranZKException;
 import org.mz.ditran.core.zk.DitranZKClient;
@@ -34,19 +35,21 @@ public abstract class DitransactionManagerAdapter implements DitransactionManage
 
     @Override
     public void regist() throws Exception {
-        String path = zkClient.getClient().create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath(ditranInfo.getZkPath().getFullPath());
+        String path = zkClient.getClient().create()
+                .withMode(CreateMode.PERSISTENT_SEQUENTIAL)
+                .forPath(ditranInfo.getZkPath().getFullPath(),ditranInfo.getNodeInfo().toByte());
         ditranInfo.setZkPath(new ZkPath(path));
     }
 
     @Override
     public void prepare() throws Exception {
-        zkClient.update(ditranInfo.getZkPath().getFullPath(), DitranConstants.ZK_NODE_SUCCESS_VALUE);
+        zkClient.update(ditranInfo.getZkPath().getFullPath(), ditranInfo.getNodeInfo().setSucceed().toString());
     }
 
     @Override
     public void rollback() throws DitranZKException {
         transactionManager.rollback(ditranInfo.getTransactionStatus());
-        zkClient.update(ditranInfo.getZkPath().getFullPath(), DitranConstants.ZK_NODE_FAIL_VALUE);
+        zkClient.update(ditranInfo.getZkPath().getFullPath(), ditranInfo.getNodeInfo().setFailed().toString());
     }
 
 

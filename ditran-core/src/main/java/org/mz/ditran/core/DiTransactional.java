@@ -19,4 +19,10 @@ public @interface DiTransactional {
 
     Propagation propagation() default Propagation.REQUIRED;
 
+    /**
+     * unit milliseconds
+     * @return
+     */
+    long timeout() default 10000;
+
 }

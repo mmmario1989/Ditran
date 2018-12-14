@@ -3,6 +3,7 @@ package org.mz.ditran.core.transaction;
 import lombok.extern.slf4j.Slf4j;
 import org.mz.ditran.common.Handler;
 import org.mz.ditran.common.entity.DitranInfo;
+import org.mz.ditran.common.entity.NodeInfo;
 import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.common.exception.DitransactionException;
 import org.springframework.transaction.annotation.Propagation;
@@ -42,8 +43,8 @@ public class DitransactionWrapper<PARAM,RES> {
         return builder;
     }
 
-    public RES start(String methodName, Propagation propagation,PARAM param) throws Throwable {
-        transactionManager.begin(methodName,propagation);
+    public RES start(NodeInfo nodeInfo, Propagation propagation, PARAM param) throws Throwable {
+        transactionManager.begin(nodeInfo,propagation);
         transactionManager.regist();
         try{
             RES res = handler.handle(param);

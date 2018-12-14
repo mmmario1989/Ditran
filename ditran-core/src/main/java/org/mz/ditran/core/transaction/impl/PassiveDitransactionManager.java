@@ -2,6 +2,7 @@ package org.mz.ditran.core.transaction.impl;
 
 import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.entity.DitranInfo;
+import org.mz.ditran.common.entity.NodeInfo;
 import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.core.transaction.DitransactionManagerAdapter;
 import org.mz.ditran.core.zk.DitranZKClient;
@@ -26,14 +27,14 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
     }
 
     @Override
-    public void begin(String methodName, Propagation propagation) throws Exception {
+    public void begin(NodeInfo nodeInfo, Propagation propagation) throws Exception {
         ZkPath zkPath = new ZkPath(activePath.getNamespace(),activePath.getTransaction());
         zkPath.setNode(DitranConstants.PASSIVE_NODE);
         TransactionStatus transactionStatus = beginLocal(propagation);
         ditranInfo = DitranInfo.builder()
                 .transactionStatus(transactionStatus)
                 .zkPath(zkPath)
-                .methodName(methodName)
+                .nodeInfo(nodeInfo)
                 .build();
     }
 
