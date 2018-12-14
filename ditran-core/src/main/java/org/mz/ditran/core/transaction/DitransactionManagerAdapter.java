@@ -1,9 +1,7 @@
 package org.mz.ditran.core.transaction;
 
 import org.apache.zookeeper.CreateMode;
-import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.entity.DitranInfo;
-import org.mz.ditran.common.entity.NodeInfo;
 import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.common.exception.DitranZKException;
 import org.mz.ditran.core.zk.DitranZKClient;
@@ -16,9 +14,7 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
  * @Author: mario
  * @Email: mmmario@foxmail.com
  * @Date: 2018-12-14 12:42 PM
- * @Description:
- *
- * implement the common methods
+ * @Description: implement the common methods
  */
 public abstract class DitransactionManagerAdapter implements DitransactionManager {
 
@@ -37,7 +33,7 @@ public abstract class DitransactionManagerAdapter implements DitransactionManage
     public void regist() throws Exception {
         String path = zkClient.getClient().create()
                 .withMode(CreateMode.PERSISTENT_SEQUENTIAL)
-                .forPath(ditranInfo.getZkPath().getFullPath(),ditranInfo.getNodeInfo().toByte());
+                .forPath(ditranInfo.getZkPath().getFullPath(), ditranInfo.getNodeInfo().toByte());
         ditranInfo.setZkPath(new ZkPath(path));
     }
 
@@ -53,7 +49,7 @@ public abstract class DitransactionManagerAdapter implements DitransactionManage
     }
 
 
-    protected TransactionStatus beginLocal(Propagation propagation){
+    protected TransactionStatus beginLocal(Propagation propagation) {
         DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
         definition.setPropagationBehavior(propagation.value());
         return transactionManager.getTransaction(definition);
