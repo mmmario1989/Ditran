@@ -24,10 +24,13 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
 
     private ZkPath activePath;
 
+    private long timeout;
 
-    public PassiveDitransactionManager(PlatformTransactionManager transactionManager, DitranZKClient zkClient, ZkPath activePath) {
+
+    public PassiveDitransactionManager(PlatformTransactionManager transactionManager, DitranZKClient zkClient, ZkPath activePath, long timeout) {
         super(transactionManager, zkClient);
         this.activePath = activePath;
+        this.timeout = timeout;
     }
 
     @Override

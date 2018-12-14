@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Propagation;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.concurrent.Executors;
 
 /**
  * 事务被动接受端
@@ -44,10 +43,11 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
     @Override
     public Result doInvoke(final Invoker<?> invoker, final Invocation invocation) throws UnknownHostException {
         final String activePathStr = RpcContext.getContext().getAttachment(DitranConstants.ACTIVE_PATH_KEY);
+        final long timeOut = Long.parseLong(RpcContext.getContext().getAttachment(DitranConstants.TIMEOUT_KEY));
         final ZkPath activePath = new ZkPath(activePathStr);
         final DitranContainer container = DitranContainer.getConfig(DitranPassiveContainer.class);
         PlatformTransactionManager platformTransactionManager = container.getTransactionManager();
-        final DitransactionManager manager = new PassiveDitransactionManager(platformTransactionManager, container.getZkClient(), activePath);
+        final DitransactionManager manager = new PassiveDitransactionManager(platformTransactionManager, container.getZkClient(), activePath, timeOut);
         final ResultHolder<Result> holder = new ResultHolder<>();
 
         // 构建Passive节点信息.
@@ -59,7 +59,7 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
                 .status(DitranConstants.ZK_NODE_START_VALUE).build();
 
 
-        Executors.newFixedThreadPool(1).execute(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -79,7 +79,7 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
                     holder.setE(e);
                 }
             }
-        });
+        }).start();
         while (holder.isEmpty()) ;
         if (holder.getE() != null) {
             throw new RpcException(holder.getE());
@@ -89,9 +89,6 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
 
 
     /**
-     *
-     *
-     *
      * @param invocation
      * @return
      */
