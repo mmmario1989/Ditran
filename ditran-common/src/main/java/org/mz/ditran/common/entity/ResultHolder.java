@@ -7,7 +7,12 @@ import lombok.Data;
  * @Date: 2018-12-14 09:59
  */
 @Data
-public class DitranRpcResultHolder<T> {
+public class ResultHolder<T> {
+    /**
+     * 判断是否holder是否为空.由启动的线程设置.
+     */
+    private volatile boolean empty = true;
+
     /**
      * 数据结果
      *
