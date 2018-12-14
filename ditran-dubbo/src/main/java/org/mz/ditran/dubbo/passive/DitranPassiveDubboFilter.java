@@ -3,6 +3,7 @@ package org.mz.ditran.dubbo.passive;
 import com.alibaba.dubbo.rpc.RpcContext;
 import org.apache.commons.lang3.StringUtils;
 import org.mz.ditran.common.DitranConstants;
+import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.dubbo.DitranDubboFilter;
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Activate;
@@ -25,11 +26,15 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
 
     @Override
     protected boolean isDitran() {
-        return StringUtils.isNotBlank(RpcContext.getContext().getAttachment(DitranConstants.TRANSACTION_PATH));
+        return StringUtils.isNotBlank(RpcContext.getContext().getAttachment(DitranConstants.ACTIVE_PATH_KEY));
     }
 
     @Override
     public Result doInvoke(Invoker<?> invoker, Invocation invocation) {
+        String path = invocation.getAttachment(DitranConstants.ACTIVE_PATH_KEY);
+        ZkPath zkPath = new ZkPath(path);
+
+        //todo
         return null;
     }
 
