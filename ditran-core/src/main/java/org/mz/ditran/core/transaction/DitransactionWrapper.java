@@ -4,6 +4,7 @@ import com.google.common.base.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.mz.ditran.common.Handler;
 import org.mz.ditran.common.entity.DitranInfo;
+import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.common.exception.DitransactionException;
 import org.springframework.transaction.annotation.Propagation;
 
@@ -46,10 +47,10 @@ public class DitransactionWrapper<PARAM,RES> {
 
     public RES start(String methodName, Propagation propagation,PARAM param) throws Throwable {
         DitranInfo ditranInfo = transactionManager.begin(methodName,propagation);
-        transactionManager.regist(ditranInfo.getZkPath());
-        RES res;
+        ZkPath zkPath = transactionManager.regist(ditranInfo.getZkPath());
+        ditranInfo.setZkPath(zkPath);
         try{
-            res = handler.handle(param);
+            RES res = handler.handle(param);
             transactionManager.prepare(ditranInfo.getZkPath());
             boolean succeed = transactionManager.listen(ditranInfo.getZkPath());
             if(succeed){
