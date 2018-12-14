@@ -1,19 +1,21 @@
 package org.mz.ditran.dubbo.passive;
 
-import com.alibaba.dubbo.rpc.*;
+import com.alibaba.dubbo.common.Constants;
+import com.alibaba.dubbo.common.extension.Activate;
+import com.alibaba.dubbo.rpc.Invocation;
+import com.alibaba.dubbo.rpc.Invoker;
+import com.alibaba.dubbo.rpc.Result;
+import com.alibaba.dubbo.rpc.RpcContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.Handler;
 import org.mz.ditran.common.entity.ResultHolder;
 import org.mz.ditran.core.conf.DitranActiveContainer;
 import org.mz.ditran.core.conf.DitranContainer;
 import org.mz.ditran.core.transaction.DitransactionManager;
 import org.mz.ditran.core.transaction.DitransactionWrapper;
-import org.mz.ditran.common.DitranConstants;
-import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.dubbo.DitranDubboFilter;
-import com.alibaba.dubbo.common.Constants;
-import com.alibaba.dubbo.common.extension.Activate;
 import org.springframework.transaction.annotation.Propagation;
 
 import java.util.concurrent.Executors;
@@ -39,7 +41,7 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
 
     @Override
     public Result doInvoke(Invoker<?> invoker, Invocation invocation) {
-        String transactionId = RpcContext.getContext().getAttachment(org.mz.ditran.common.Constants.DUBBO_ATTACHMENTS_KEY);
+        String transactionId = RpcContext.getContext().getAttachment(DitranConstants.ACTIVE_PATH_KEY);
         DitransactionManager manager = DitranContainer.getConfig(DitranActiveContainer.class).getDitransactionManager();
         ResultHolder<Result> holder = new ResultHolder<>();
         Executors.newFixedThreadPool(1).execute(new Runnable() {
