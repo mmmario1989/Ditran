@@ -101,11 +101,4 @@ public class DitranZKClient {
     }
 
 
-    /**
-     * 获取passive端超时时间
-     * @return
-     */
-    public long getPassiveTimeout() {
-        return config.getPassiveTimeoutMilliseconds();
-    }
 }

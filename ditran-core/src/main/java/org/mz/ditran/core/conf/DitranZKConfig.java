@@ -17,8 +17,6 @@ public class DitranZKConfig {
     private int maxRetries = 3;
     private int sessionTimeoutMilliseconds;
     private int connectionTimeoutMilliseconds;
-    // Passive端监控Active端超时时间, 默认10秒钟
-    private long passiveTimeoutMilliseconds = 10000;
     private String digest;
 
     @ConstructorProperties({"serverLists", "namespace"})

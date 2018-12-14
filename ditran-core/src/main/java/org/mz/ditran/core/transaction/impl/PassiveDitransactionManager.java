@@ -47,18 +47,18 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
 
     @Override
     public boolean listen() throws Exception{
-        return new BlockingChecker<String, Boolean>(activePath.getFullPath(), false).blocking(new Handler<String, Boolean>() {
+        return new BlockingChecker<>(activePath.getFullPath(), false).blocking(new Handler<String, Boolean>() {
             @Override
             public Boolean handle(String key) throws Throwable {
-                String result;
+                NodeInfo nodeInfo;
                 do {
                     TimeUnit.MILLISECONDS.sleep(100);
-                    result = zkClient.get(key);
-                } while (!DitranConstants.ZK_NODE_SUCCESS_VALUE.equals(result));
+                    nodeInfo = zkClient.getNodeInfo(key);
+                } while (!DitranConstants.ZK_NODE_SUCCESS_VALUE.equals(nodeInfo.getStatus()));
 
                 return true;
             }
-        }, zkClient.getPassiveTimeout());
+        },timeout);
     }
 
 
