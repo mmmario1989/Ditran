@@ -21,7 +21,8 @@ public class DitransactionWrapper<PARAM,RES> {
 
     private DitransactionManager transactionManager;
 
-
+    private DitransactionWrapper() {
+    }
 
     public static class DitransactionWrapperBuilder<PARAM,RES>{
         private Handler<PARAM,RES> handler;
@@ -35,9 +36,6 @@ public class DitransactionWrapper<PARAM,RES> {
     }
 
 
-    private DitransactionWrapper() {
-    }
-
     public static<PARAM,RES> DitransactionWrapperBuilder<PARAM,RES> wrap(Handler<PARAM,RES> handler){
         DitransactionWrapperBuilder<PARAM,RES> builder = new DitransactionWrapperBuilder<>();
         builder.handler = handler;
@@ -45,22 +43,21 @@ public class DitransactionWrapper<PARAM,RES> {
     }
 
     public RES start(String methodName, Propagation propagation,PARAM param) throws Throwable {
-        DitranInfo ditranInfo = transactionManager.begin(methodName,propagation);
-        ZkPath zkPath = transactionManager.regist(ditranInfo.getZkPath());
-        ditranInfo.setZkPath(zkPath);
+        transactionManager.begin(methodName,propagation);
+        transactionManager.regist();
         try{
             RES res = handler.handle(param);
-            transactionManager.prepare(ditranInfo.getZkPath());
-            boolean succeed = transactionManager.listen(ditranInfo.getZkPath());
+            transactionManager.prepare();
+            boolean succeed = transactionManager.listen();
             if(succeed){
-                transactionManager.commit(ditranInfo);
+                transactionManager.commit();
             }else {
                 throw new DitransactionException("other node failed");
             }
             return res;
         }catch (Throwable e){
             log.info(e.getMessage(),e);
-            transactionManager.rollback(ditranInfo);
+            transactionManager.rollback();
             throw e;
         }
 

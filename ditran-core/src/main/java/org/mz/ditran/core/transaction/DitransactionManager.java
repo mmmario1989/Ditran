@@ -1,8 +1,5 @@
 package org.mz.ditran.core.transaction;
 
-import org.mz.ditran.common.entity.DitranInfo;
-import org.mz.ditran.common.entity.ZkPath;
-import org.mz.ditran.common.exception.DitranZKException;
 import org.springframework.transaction.annotation.Propagation;
 
 /**
@@ -13,16 +10,16 @@ import org.springframework.transaction.annotation.Propagation;
  */
 public interface DitransactionManager  {
 
-    DitranInfo begin(String methodName, Propagation propagation) throws Exception;
+    void begin(String methodName, Propagation propagation) throws Exception;
 
-    ZkPath regist(ZkPath zkPath) throws Exception;
+    void regist() throws Exception;
 
-    void prepare(ZkPath zkPath) throws DitranZKException;
+    void prepare() throws Exception;
 
-    boolean listen(ZkPath zkPath);
+    boolean listen() throws Exception;
 
-    void commit(DitranInfo ditranInfo);
+    void commit() throws Exception;
 
-    void rollback(DitranInfo ditranInfo) throws DitranZKException;
+    void rollback() throws Exception;
 
 }

@@ -26,13 +26,13 @@ public class ActiveDitransactionManager extends DitransactionManagerAdapter {
     }
 
     @Override
-    public DitranInfo begin(String methodName, Propagation propagation) throws Exception {
+    public void begin(String methodName, Propagation propagation) throws Exception {
         String path = zkClient.getClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath(zkClient.getPrefix()+"/"+methodName);
         ZkPath zkPath = new ZkPath(path);
         zkPath.setNode(DitranConstants.ACTIVE_NODE);
         DitranContext.setZkPath(zkPath);
         TransactionStatus transactionStatus = beginLocal(propagation);
-        return DitranInfo.builder()
+        ditranInfo =  DitranInfo.builder()
                 .methodName(methodName)
                 .zkPath(zkPath)
                 .transactionStatus(transactionStatus)
@@ -40,12 +40,12 @@ public class ActiveDitransactionManager extends DitransactionManagerAdapter {
     }
 
     @Override
-    public boolean listen(ZkPath zkPath) {
+    public boolean listen() throws Exception{
         return false;
     }
 
     @Override
-    public void commit(DitranInfo ditranInfo) {
+    public void commit() throws Exception{
 
     }
 }

@@ -10,6 +10,8 @@ import org.mz.ditran.core.conf.DitranActiveContainer;
 import org.mz.ditran.core.conf.DitranContainer;
 import org.mz.ditran.core.transaction.DitransactionManager;
 import org.mz.ditran.core.transaction.DitransactionWrapper;
+import org.mz.ditran.core.transaction.impl.ActiveDitransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 
 /**
@@ -32,7 +34,9 @@ public class DitranAspect {
         Propagation propagation = ditranAnn.propagation();
         //set context
         DitranContext.setRpcType(rpcType);
-        DitransactionManager manager = DitranContainer.getConfig(DitranActiveContainer.class).getDitransactionManager();
+        DitranContainer container = DitranContainer.getConfig(DitranActiveContainer.class);
+        PlatformTransactionManager platformTransactionManager = container.getTransactionManager();
+        DitransactionManager manager = new ActiveDitransactionManager(platformTransactionManager,container.getZkClient());
         try{
             return  DitransactionWrapper.wrap(new Handler<Object, Object>() {
                 @Override

@@ -36,7 +36,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Getter
-@Component
 public abstract class DitranContainer implements ApplicationContextAware {
 
 
@@ -51,7 +50,6 @@ public abstract class DitranContainer implements ApplicationContextAware {
     private DitranZKConfig config;
 
 
-    @Autowired
     public DitranContainer(DitranZKConfig config, PlatformTransactionManager transactionManager) {
         this.config = config;
         this.transactionManager = transactionManager;

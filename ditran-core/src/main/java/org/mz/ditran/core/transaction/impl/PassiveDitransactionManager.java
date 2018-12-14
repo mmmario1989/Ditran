@@ -1,10 +1,12 @@
 package org.mz.ditran.core.transaction.impl;
 
+import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.entity.DitranInfo;
 import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.core.transaction.DitransactionManagerAdapter;
 import org.mz.ditran.core.zk.DitranZKClient;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
 
 /**
@@ -15,22 +17,33 @@ import org.springframework.transaction.annotation.Propagation;
  */
 public class PassiveDitransactionManager extends DitransactionManagerAdapter {
 
-    public PassiveDitransactionManager(PlatformTransactionManager transactionManager, DitranZKClient zkClient) {
+    private ZkPath activePath;
+
+
+    public PassiveDitransactionManager(PlatformTransactionManager transactionManager, DitranZKClient zkClient, ZkPath activePath) {
         super(transactionManager, zkClient);
+        this.activePath = activePath;
     }
 
     @Override
-    public DitranInfo begin(String methodName, Propagation propagation) {
-        return null;
+    public void begin(String methodName, Propagation propagation) throws Exception {
+        ZkPath zkPath = new ZkPath(activePath.getNamespace(),activePath.getTransaction());
+        zkPath.setNode(DitranConstants.PASSIVE_NODE);
+        TransactionStatus transactionStatus = beginLocal(propagation);
+        ditranInfo = DitranInfo.builder()
+                .transactionStatus(transactionStatus)
+                .zkPath(zkPath)
+                .methodName(methodName)
+                .build();
     }
 
     @Override
-    public boolean listen(ZkPath zkPath) {
+    public boolean listen() throws Exception{
         return false;
     }
 
     @Override
-    public void commit(DitranInfo ditranInfo) {
+    public void commit() throws Exception{
 
     }
 }

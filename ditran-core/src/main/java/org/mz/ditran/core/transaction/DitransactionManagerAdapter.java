@@ -25,24 +25,26 @@ public abstract class DitransactionManagerAdapter implements DitransactionManage
 
     protected DitranZKClient zkClient;
 
+    protected DitranInfo ditranInfo;
+
     public DitransactionManagerAdapter(PlatformTransactionManager transactionManager, DitranZKClient zkClient) {
         this.transactionManager = transactionManager;
         this.zkClient = zkClient;
     }
 
     @Override
-    public ZkPath regist(ZkPath zkPath) throws Exception {
-        String path = zkClient.getClient().create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath(zkPath.getFullPath());
-        return new ZkPath(path);
+    public void regist() throws Exception {
+        String path = zkClient.getClient().create().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath(ditranInfo.getZkPath().getFullPath());
+        ditranInfo.setZkPath(new ZkPath(path));
     }
 
     @Override
-    public void prepare(ZkPath zkPath) throws DitranZKException {
-        zkClient.update(zkPath.getFullPath(), DitranConstants.ZK_NODE_SUCCESS_VALUE);
+    public void prepare() throws DitranZKException {
+        zkClient.update(ditranInfo.getZkPath().getFullPath(), DitranConstants.ZK_NODE_SUCCESS_VALUE);
     }
 
     @Override
-    public void rollback(DitranInfo ditranInfo) throws DitranZKException {
+    public void rollback() throws DitranZKException {
         transactionManager.rollback(ditranInfo.getTransactionStatus());
         zkClient.update(ditranInfo.getZkPath().getFullPath(), DitranConstants.ZK_NODE_FAIL_VALUE);
     }
