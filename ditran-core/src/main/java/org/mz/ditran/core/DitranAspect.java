@@ -27,37 +27,35 @@ import java.net.InetAddress;
 public class DitranAspect {
 
 
-
-
     @Around("@annotation(org.mz.ditran.core.DiTransactional))")
-    public Object ditranAround(final ProceedingJoinPoint point)throws Throwable{
+    public Object ditranAround(final ProceedingJoinPoint point) throws Throwable {
         Class claz = point.getSignature().getDeclaringType();
         Object[] args = point.getArgs();
-        String [] paramTypes = new String[args.length];
-        for (int i = 0;i<args.length;i++){
+        String[] paramTypes = new String[args.length];
+        for (int i = 0; i < args.length; i++) {
             paramTypes[i] = args.getClass().getSimpleName();
         }
         DiTransactional ditranAnn = (DiTransactional) claz.getAnnotation(DiTransactional.class);
         Propagation propagation = ditranAnn.propagation();
-        long timeout =  ditranAnn.timeout();
+        long timeout = ditranAnn.timeout();
         DitranContext.setTimeout(timeout);
         DitranContainer container = DitranContainer.getConfig(DitranActiveContainer.class);
         PlatformTransactionManager platformTransactionManager = container.getTransactionManager();
-        DitransactionManager manager = new ActiveDitransactionManager(platformTransactionManager,container.getZkClient());
-        try{
+        DitransactionManager manager = new ActiveDitransactionManager(platformTransactionManager, container.getZkClient());
+        try {
             NodeInfo nodeInfo = NodeInfo.builder()
                     .className(claz.getSimpleName())
                     .host(InetAddress.getLocalHost().getHostAddress())
                     .methodName(point.getSignature().getName())
                     .paramTypes(paramTypes)
                     .status(DitranConstants.ZK_NODE_START_VALUE).build();
-            return  DitransactionWrapper.wrap(new Handler<Object, Object>() {
+            return DitransactionWrapper.wrap(new Handler<Object, Object>() {
                 @Override
                 public Object handle(Object o) throws Throwable {
                     return point.proceed();
                 }
-            }).with(manager).start(nodeInfo,propagation, null);
-        }finally {
+            }).with(manager).start(nodeInfo, propagation, null);
+        } finally {
             DitranContext.clear();
         }
 

@@ -20,7 +20,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * 事务被动接受端
@@ -41,7 +40,7 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
     }
 
     @Override
-    public Result doInvoke(final Invoker<?> invoker, final Invocation invocation) throws UnknownHostException {
+    public Result doInvoke(final Invoker<?> invoker, final Invocation invocation) throws Exception {
         final String activePathStr = RpcContext.getContext().getAttachment(DitranConstants.ACTIVE_PATH_KEY);
         final long timeOut = Long.parseLong(RpcContext.getContext().getAttachment(DitranConstants.TIMEOUT_KEY));
         final ZkPath activePath = new ZkPath(activePathStr);
