@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Propagation;
  */
 public interface DitransactionManager  {
 
-
     DitranInfo begin(String methodName, Propagation propagation) throws Exception;
 
     ZkPath regist(ZkPath zkPath) throws Exception;
