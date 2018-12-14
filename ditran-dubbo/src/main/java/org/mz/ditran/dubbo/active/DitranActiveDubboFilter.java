@@ -5,6 +5,7 @@ import com.alibaba.dubbo.common.extension.Activate;
 import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
+import org.mz.ditran.common.DitranContext;
 import org.mz.ditran.dubbo.DitranDubboFilter;
 
 /**
@@ -17,7 +18,7 @@ public class DitranActiveDubboFilter extends DitranDubboFilter {
 
     @Override
     protected boolean isDitran() {
-        return false;
+        return DitranContext.get().isDitranSwitch();
     }
 
     @Override

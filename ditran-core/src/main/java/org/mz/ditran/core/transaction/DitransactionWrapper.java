@@ -2,6 +2,7 @@ package org.mz.ditran.core.transaction;
 
 import com.google.common.base.Function;
 import lombok.extern.slf4j.Slf4j;
+import org.mz.ditran.common.Handler;
 import org.mz.ditran.common.entity.DitranInfo;
 import org.mz.ditran.common.exception.DitransactionException;
 import org.springframework.transaction.annotation.Propagation;
@@ -16,18 +17,18 @@ import org.springframework.transaction.annotation.Propagation;
 @Slf4j
 public class DitransactionWrapper<PARAM,RES> {
 
-    private Function<PARAM,RES> function;
+    private Handler<PARAM,RES> handler;
 
     private DitransactionManager transactionManager;
 
 
 
     public static class DitransactionWrapperBuilder<PARAM,RES>{
-        private Function<PARAM,RES> function;
+        private Handler<PARAM,RES> handler;
 
         public DitransactionWrapper<PARAM,RES> with(DitransactionManager ditransactionManager){
             DitransactionWrapper<PARAM,RES> wrapper = new DitransactionWrapper<>();
-            wrapper.function = this.function;
+            wrapper.handler = this.handler;
             wrapper.transactionManager = ditransactionManager;
             return wrapper;
         }
@@ -37,18 +38,18 @@ public class DitransactionWrapper<PARAM,RES> {
     private DitransactionWrapper() {
     }
 
-    public static<PARAM,RES> DitransactionWrapperBuilder<PARAM,RES> wrap(Function<PARAM,RES> function){
+    public static<PARAM,RES> DitransactionWrapperBuilder<PARAM,RES> wrap(Handler<PARAM,RES> handler){
         DitransactionWrapperBuilder<PARAM,RES> builder = new DitransactionWrapperBuilder<>();
-        builder.function = function;
+        builder.handler = handler;
         return builder;
     }
 
-    public RES start(String methodName, Propagation propagation,PARAM param) throws Exception {
+    public RES start(String methodName, Propagation propagation,PARAM param) throws Throwable {
         DitranInfo ditranInfo = transactionManager.begin(methodName,propagation);
         transactionManager.regist(ditranInfo.getZkPath());
         RES res;
         try{
-            res = function.apply(param);
+            res = handler.handle(param);
             transactionManager.prepare(ditranInfo.getZkPath());
             boolean succeed = transactionManager.listen(ditranInfo.getZkPath());
             if(succeed){
@@ -57,7 +58,7 @@ public class DitransactionWrapper<PARAM,RES> {
                 throw new DitransactionException("other node failed");
             }
             return res;
-        }catch (Exception e){
+        }catch (Throwable e){
             log.info(e.getMessage(),e);
             transactionManager.rollback(ditranInfo);
             throw e;
