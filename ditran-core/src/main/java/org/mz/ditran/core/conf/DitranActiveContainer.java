@@ -1,6 +1,7 @@
 package org.mz.ditran.core.conf;
 
 import org.mz.ditran.core.DitranAspect;
+import org.springframework.util.Assert;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
@@ -19,6 +20,7 @@ public class DitranActiveContainer extends DitranContainer {
 
     @Override
     protected void check() {
-
+        super.check();
+        Assert.notNull(ditranAspect,"ditranAspect can not be null");
     }
 }

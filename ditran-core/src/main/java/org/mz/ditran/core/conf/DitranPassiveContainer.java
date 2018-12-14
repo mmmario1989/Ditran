@@ -21,18 +21,4 @@ public class DitranPassiveContainer extends DitranContainer {
         super(config, transactionManager);
     }
 
-    @Override
-    protected void check() {
-        if (config == null) {
-            throw new DitranInitException("Zk config is null!");
-        }
-
-        if (StringUtils.isBlank(config.getServerLists()) || StringUtils.isBlank(config.getNamespace())) {
-            throw new DitranInitException("Zk config missing server list or namespace!");
-        }
-
-        if (transactionManager == null) {
-            throw new DitranInitException("Passive side must config the DataSourceTransactionManager!");
-        }
-    }
 }
