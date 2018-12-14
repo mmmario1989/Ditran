@@ -1,8 +1,6 @@
 package org.mz.ditran.core.conf;
 
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
-import org.mz.ditran.common.exception.DitranInitException;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**

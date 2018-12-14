@@ -1,12 +1,19 @@
 package org.mz.ditran.core.zk;
 
+import lombok.extern.slf4j.Slf4j;
 import org.mz.ditran.common.Constants;
 import org.mz.ditran.common.exception.DitranZKException;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: jsonz
  * @Date: 2018-12-13 21:20
  */
+@Slf4j
 public class DitranZKPassiveHandler extends DitranZKHandler {
 
     private String passiveKey;
@@ -40,9 +47,11 @@ public class DitranZKPassiveHandler extends DitranZKHandler {
      */
     @Override
     public boolean check() {
-        String value = client.get(this.activeKey);
-        if (Constants.ZK_NODE_SUCCESS_VALUE.equals(value)) {
-            return true;
+        Future<Boolean> future = Executors.newFixedThreadPool(1).submit(new ActiveStatusCheckTask(client, activeKey));
+        try {
+            return future.get(client.getPassiveTimeout(), TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            log.error("Check active exception.", e.getMessage());
         }
         return false;
     }
@@ -50,6 +59,30 @@ public class DitranZKPassiveHandler extends DitranZKHandler {
     @Override
     public void write(String value) throws DitranZKException {
         client.update(this.passiveKey, value);
+    }
+
+    /**
+     * 检查Active端的状态
+     */
+    private static class ActiveStatusCheckTask implements Callable<Boolean> {
+        private DitranZKClient client;
+
+        private String activeKey;
+
+        public ActiveStatusCheckTask(DitranZKClient client, String activeKey) {
+            this.client = client;
+            this.activeKey = activeKey;
+        }
+
+        @Override
+        public Boolean call() throws Exception {
+            String result;
+            do {
+                result = client.get(this.activeKey);
+            } while(!Constants.ZK_NODE_SUCCESS_VALUE.equals(result));
+
+            return true;
+        }
     }
 
 }

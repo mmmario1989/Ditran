@@ -24,6 +24,8 @@ public abstract class DitranTransactionWrapper<T> {
 
     private TransactionStatus status;
 
+    private DitranRpcResultHolder<T> holder;
+
     private CountDownLatch latch = new CountDownLatch(1);
 
     public DitranTransactionWrapper(PlatformTransactionManager transactionManager, DitranZKHandler handler) {
@@ -31,15 +33,21 @@ public abstract class DitranTransactionWrapper<T> {
         this.handler = handler;
     }
 
+    public DitranTransactionWrapper(PlatformTransactionManager transactionManager, DitranZKHandler handler, DitranRpcResultHolder<T> holder) {
+        this(transactionManager, handler);
+        this.holder = holder;
+    }
+
     /**
      * 进行事务处理
-     * @param holder
+     * @param
      */
-    public void doTransaction(DitranRpcResultHolder<T> holder) {
+    public void doTransaction() {
         handler.register();
         begin();
         try {
-            holder.setT(doBusiness());
+            if (holder != null) holder.setT(doBusiness());
+            else doBusiness();
             this.latch.countDown();
         } catch (Exception e) {
             rollBack();
@@ -47,8 +55,13 @@ public abstract class DitranTransactionWrapper<T> {
         }
 
         handler.write(Constants.ZK_NODE_SUCCESS_VALUE);
-        if (handler.check()) commit();
-        else rollBack();
+        if (handler.check()) {
+            commit();
+            return;
+        }
+
+        rollBack();
+        handler.write(Constants.ZK_NODE_FAIL_VALUE);
     }
 
     /**
@@ -62,6 +75,10 @@ public abstract class DitranTransactionWrapper<T> {
         }
     }
 
+    /**
+     * 具体的业务逻辑代码
+     * @return
+     */
     public abstract T doBusiness();
 
 
@@ -87,5 +104,9 @@ public abstract class DitranTransactionWrapper<T> {
      */
     public void rollBack() {
         this.transactionManager.rollback(status);
+    }
+
+    public DitranRpcResultHolder<T> getHolder() {
+        return this.holder;
     }
 }
