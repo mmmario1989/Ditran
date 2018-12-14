@@ -1,6 +1,7 @@
 package org.mz.ditran.core.zk;
 
 import com.google.common.base.Charsets;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
@@ -17,8 +18,9 @@ public class DitranZKClient {
 
     private static final String ROOT = "/";
 
+    @Getter
     private CuratorFramework client;
-
+    @Getter
     private String prefix;
 
     private DitranZKConfig config;
@@ -92,13 +94,6 @@ public class DitranZKClient {
         }
     }
 
-    /**
-     * 获取前缀
-     * @return
-     */
-    public String getPrefix() {
-        return prefix;
-    }
 
     /**
      * 获取passive端超时时间

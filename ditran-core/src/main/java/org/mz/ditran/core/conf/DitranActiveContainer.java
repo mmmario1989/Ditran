@@ -1,6 +1,9 @@
 package org.mz.ditran.core.conf;
 
+import lombok.Getter;
 import org.mz.ditran.core.DitranAspect;
+import org.mz.ditran.core.transaction.DitransactionManager;
+import org.mz.ditran.core.transaction.impl.ActiveDitransactionManager;
 import org.springframework.util.Assert;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -14,8 +17,13 @@ public class DitranActiveContainer extends DitranContainer {
 
     private DitranAspect ditranAspect;
 
-    public DitranActiveContainer(DitranZKConfig config, PlatformTransactionManager transactionManager) {
+    @Getter
+    private DitransactionManager ditransactionManager;
+
+    public DitranActiveContainer(DitranZKConfig config, PlatformTransactionManager transactionManager,DitranAspect ditranAspect) {
         super(config, transactionManager);
+        this.ditranAspect = ditranAspect;
+        ditransactionManager = new ActiveDitransactionManager(transactionManager,ditranZKClient);
     }
 
     @Override
@@ -23,4 +31,6 @@ public class DitranActiveContainer extends DitranContainer {
         super.check();
         Assert.notNull(ditranAspect,"ditranAspect can not be null");
     }
+
+
 }

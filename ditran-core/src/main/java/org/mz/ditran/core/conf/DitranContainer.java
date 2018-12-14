@@ -42,7 +42,7 @@ public abstract class DitranContainer implements ApplicationContextAware {
 
     private static ApplicationContext context;
 
-    protected static PlatformTransactionManager transactionManager;
+    protected PlatformTransactionManager transactionManager;
 
     private CuratorFramework client;
 
@@ -50,10 +50,11 @@ public abstract class DitranContainer implements ApplicationContextAware {
 
     private DitranZKConfig config;
 
+
     @Autowired
     public DitranContainer(DitranZKConfig config, PlatformTransactionManager transactionManager) {
         this.config = config;
-        DitranContainer.transactionManager = transactionManager;
+        this.transactionManager = transactionManager;
     }
 
     /**
@@ -144,7 +145,4 @@ public abstract class DitranContainer implements ApplicationContextAware {
     }
 
 
-    public static PlatformTransactionManager getTransactionManager(){
-        return transactionManager;
-    }
 }
