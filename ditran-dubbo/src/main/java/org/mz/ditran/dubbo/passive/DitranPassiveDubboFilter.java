@@ -2,10 +2,7 @@ package org.mz.ditran.dubbo.passive;
 
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Activate;
-import com.alibaba.dubbo.rpc.Invocation;
-import com.alibaba.dubbo.rpc.Invoker;
-import com.alibaba.dubbo.rpc.Result;
-import com.alibaba.dubbo.rpc.RpcContext;
+import com.alibaba.dubbo.rpc.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.mz.ditran.common.DitranConstants;
@@ -24,9 +21,8 @@ import org.springframework.transaction.annotation.Propagation;
 import java.util.concurrent.Executors;
 
 /**
- *
  * 事务被动接受端
- *
+ * <p>
  * DUBBO服务提供者
  *
  * @Author: jsonz
@@ -46,9 +42,9 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
     public Result doInvoke(final Invoker<?> invoker, final Invocation invocation) {
         final String activePathStr = RpcContext.getContext().getAttachment(DitranConstants.ACTIVE_PATH_KEY);
         final ZkPath activePath = new ZkPath(activePathStr);
-        final DitranContainer container =DitranContainer.getConfig(DitranPassiveContainer.class);
+        final DitranContainer container = DitranContainer.getConfig(DitranPassiveContainer.class);
         PlatformTransactionManager platformTransactionManager = container.getTransactionManager();
-        final DitransactionManager manager = new PassiveDitransactionManager(platformTransactionManager,container.getZkClient(),activePath);
+        final DitransactionManager manager = new PassiveDitransactionManager(platformTransactionManager, container.getZkClient(), activePath);
         final ResultHolder<Result> holder = new ResultHolder<>();
         Executors.newFixedThreadPool(1).execute(new Runnable() {
             @Override
@@ -64,11 +60,17 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
                         }
                     }).with(manager).start(invocation.getMethodName(), Propagation.REQUIRED, invocation);
                 } catch (Throwable e) {
+                    // 抛出异常，使外界能感知到
                     log.error(e.getMessage(), e);
+                    holder.setEmpty(false);
+                    holder.setE(e);
                 }
             }
         });
-        while (holder.isEmpty());
+        while (holder.isEmpty()) ;
+        if (holder.getE() != null) {
+            throw new RpcException(holder.getE());
+        }
         return holder.getT();
     }
 

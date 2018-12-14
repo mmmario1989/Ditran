@@ -22,4 +22,9 @@ public class ResultHolder<T> {
      */
     private T t;
 
+    /**
+     * catch住异常，在外部抛出感知异常.
+     */
+    private Throwable e;
+
 }
