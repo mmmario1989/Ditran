@@ -15,19 +15,24 @@ public class DitranContext {
     private static final ThreadLocal<DitranContext> HOLDER = new ThreadLocal<>();
 
     private RpcType rpcType;
-    private boolean ditranSwitch;
+    private String transactionPath;
 
-    private DitranContext(RpcType rpcType, boolean ditranSwitch) {
-        this.rpcType = rpcType;
-        this.ditranSwitch = ditranSwitch;
+
+    public static void setRpcType(RpcType rpcType){
+        get().rpcType = rpcType;
     }
 
-    public static void set(RpcType rpcType, boolean ditranSwitch){
-        HOLDER.set(new DitranContext(rpcType,ditranSwitch));
+    public static void setTransactionPath(String transactionPath){
+        get().transactionPath = transactionPath;
     }
 
     public static DitranContext get(){
-        return HOLDER.get();
+        DitranContext context =  HOLDER.get();
+        if(context==null){
+            context = new DitranContext();
+            HOLDER.set(context);
+        }
+        return context;
     }
 
     public static void clear(){

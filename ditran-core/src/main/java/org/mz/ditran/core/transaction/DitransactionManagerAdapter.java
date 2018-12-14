@@ -1,7 +1,7 @@
 package org.mz.ditran.core.transaction;
 
 import org.apache.zookeeper.CreateMode;
-import org.mz.ditran.common.Constants;
+import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.entity.DitranInfo;
 import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.common.exception.DitranZKException;
@@ -38,13 +38,13 @@ public abstract class DitransactionManagerAdapter implements DitransactionManage
 
     @Override
     public void prepare(ZkPath zkPath) throws DitranZKException {
-        zkClient.update(zkPath.getFullPath(), Constants.ZK_NODE_SUCCESS_VALUE);
+        zkClient.update(zkPath.getFullPath(), DitranConstants.ZK_NODE_SUCCESS_VALUE);
     }
 
     @Override
     public void rollback(DitranInfo ditranInfo) throws DitranZKException {
         transactionManager.rollback(ditranInfo.getTransactionStatus());
-        zkClient.update(ditranInfo.getZkPath().getFullPath(),Constants.ZK_NODE_FAIL_VALUE);
+        zkClient.update(ditranInfo.getZkPath().getFullPath(), DitranConstants.ZK_NODE_FAIL_VALUE);
     }
 
 

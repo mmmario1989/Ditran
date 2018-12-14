@@ -2,6 +2,7 @@ package org.mz.ditran.dubbo.passive;
 
 import com.alibaba.dubbo.rpc.RpcContext;
 import org.apache.commons.lang3.StringUtils;
+import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.dubbo.DitranDubboFilter;
 import com.alibaba.dubbo.common.Constants;
 import com.alibaba.dubbo.common.extension.Activate;
@@ -24,7 +25,7 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
 
     @Override
     protected boolean isDitran() {
-        return StringUtils.isNotBlank(RpcContext.getContext().getAttachment(org.mz.ditran.common.Constants.DUBBO_ATTACHMENTS_KEY));
+        return StringUtils.isNotBlank(RpcContext.getContext().getAttachment(DitranConstants.TRANSACTION_PATH));
     }
 
     @Override

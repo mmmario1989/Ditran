@@ -31,7 +31,7 @@ public class DitranAspect {
         RpcType rpcType = ditranAnn.value();
         Propagation propagation = ditranAnn.propagation();
         //set context
-        DitranContext.set(rpcType, propagation != Propagation.NEVER);
+        DitranContext.setRpcType(rpcType);
         DitransactionManager manager = DitranContainer.getConfig(DitranActiveContainer.class).getDitransactionManager();
         try{
             return  DitransactionWrapper.wrap(new Handler<Object, Object>() {

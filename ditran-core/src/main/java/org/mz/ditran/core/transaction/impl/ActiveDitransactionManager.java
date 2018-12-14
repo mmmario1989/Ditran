@@ -1,7 +1,8 @@
 package org.mz.ditran.core.transaction.impl;
 
 import org.apache.zookeeper.CreateMode;
-import org.mz.ditran.common.Constants;
+import org.mz.ditran.common.DitranConstants;
+import org.mz.ditran.common.DitranContext;
 import org.mz.ditran.common.entity.DitranInfo;
 import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.core.transaction.DitransactionManagerAdapter;
@@ -27,8 +28,9 @@ public class ActiveDitransactionManager extends DitransactionManagerAdapter {
     @Override
     public DitranInfo begin(String methodName, Propagation propagation) throws Exception {
         String path = zkClient.getClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath(zkClient.getPrefix()+"/"+methodName);
+        DitranContext.setTransactionPath(path);
         ZkPath zkPath = new ZkPath(path);
-        zkPath.setNode(Constants.ACTIVE_NODE);
+        zkPath.setNode(DitranConstants.ACTIVE_NODE);
         TransactionStatus transactionStatus = beginLocal(propagation);
         return DitranInfo.builder()
                 .methodName(methodName)

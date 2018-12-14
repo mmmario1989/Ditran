@@ -5,8 +5,12 @@ import com.alibaba.dubbo.common.extension.Activate;
 import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
+import com.alibaba.dubbo.rpc.RpcContext;
+import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.DitranContext;
 import org.mz.ditran.dubbo.DitranDubboFilter;
+
+import java.util.Map;
 
 /**
  * @Author: jsonz
@@ -18,12 +22,14 @@ public class DitranActiveDubboFilter extends DitranDubboFilter {
 
     @Override
     protected boolean isDitran() {
-        return DitranContext.get().isDitranSwitch();
+        return DitranContext.get().getTransactionPath()!=null;
     }
 
     @Override
     public Result doInvoke(Invoker<?> invoker, Invocation invocation) {
-        return null;
+        Map<String,String> attach = RpcContext.getContext().getAttachments();
+        attach.put(DitranConstants.TRANSACTION_PATH,DitranContext.get().getTransactionPath());
+        return invoker.invoke(invocation);
     }
 
 
