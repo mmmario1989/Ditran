@@ -1,0 +1,2 @@
+ditranActiveDubboFilter=org.mz.ditran.dubbo.active.DitranActiveDubboFilter
+ditranPassiveDubboFilter=org.mz.ditran.dubbo.passive.DitranPassiveDubboFilter
