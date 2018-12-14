@@ -3,7 +3,7 @@ package org.mz.ditran.core.conf;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.mz.ditran.common.exception.DitranInitException;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  *
@@ -16,11 +16,9 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
  */
 @Data
 public class DitranPassiveContainer extends DitranContainer {
-    private DataSourceTransactionManager manager;
 
-    public DitranPassiveContainer(DitranZKConfig config, DataSourceTransactionManager manager) {
-        super(config);
-        this.manager = manager;
+    public DitranPassiveContainer(DitranZKConfig config, PlatformTransactionManager transactionManager) {
+        super(config, transactionManager);
     }
 
     @Override
@@ -33,7 +31,7 @@ public class DitranPassiveContainer extends DitranContainer {
             throw new DitranInitException("Zk config missing server list or namespace!");
         }
 
-        if (manager == null) {
+        if (transactionManager == null) {
             throw new DitranInitException("Passive side must config the DataSourceTransactionManager!");
         }
     }

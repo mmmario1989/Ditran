@@ -1,6 +1,7 @@
 package org.mz.ditran.core.conf;
 
 import org.mz.ditran.core.DitranAspect;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * @Author: mario
@@ -12,8 +13,8 @@ public class DitranActiveContainer extends DitranContainer {
 
     private DitranAspect ditranAspect;
 
-    public DitranActiveContainer(DitranZKConfig config) {
-        super(config);
+    public DitranActiveContainer(DitranZKConfig config, PlatformTransactionManager transactionManager) {
+        super(config, transactionManager);
     }
 
     @Override

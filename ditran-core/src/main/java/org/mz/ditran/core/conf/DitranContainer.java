@@ -16,6 +16,7 @@ import org.mz.ditran.core.zk.DitranZKClient;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -31,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public abstract class DitranContainer implements ApplicationContextAware {
 
+
     private static ApplicationContext context;
 
     private CuratorFramework client;
@@ -39,8 +41,11 @@ public abstract class DitranContainer implements ApplicationContextAware {
 
     protected DitranZKConfig config;
 
-    public DitranContainer(DitranZKConfig config) {
+    protected PlatformTransactionManager transactionManager;
+
+    public DitranContainer(DitranZKConfig config, PlatformTransactionManager transactionManager) {
         this.config = config;
+        this.transactionManager = transactionManager;
     }
 
     /**
@@ -114,5 +119,11 @@ public abstract class DitranContainer implements ApplicationContextAware {
         return context.getBean(config);
     }
 
+    /**
+     * 基本参数验证
+     *
+     * 报错跑出RuntimeException
+     *
+     */
     protected abstract void check();
 }
