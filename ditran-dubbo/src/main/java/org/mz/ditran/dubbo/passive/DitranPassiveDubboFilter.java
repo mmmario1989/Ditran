@@ -50,36 +50,8 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
         final DitransactionManager manager = new PassiveDitransactionManager(platformTransactionManager, container.getZkClient(), activePath, timeOut);
         final ResultHolder<Result> holder = new ResultHolder<>();
 
-        // 构建Passive节点信息.
-        final NodeInfo nodeInfo = NodeInfo.builder()
-                .className(invoker.getInterface().getSimpleName())
-                .host(InetAddress.getLocalHost().getHostAddress())
-                .methodName(invocation.getMethodName())
-                .paramTypes(getParamTypes(invocation))
-                .status(DitranConstants.ZK_NODE_START_VALUE).build();
-
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    DitransactionWrapper.wrap(new Handler<Invocation, Result>() {
-                        @Override
-                        public Result handle(Invocation invocation) throws Throwable {
-                            Result result = invoker.invoke(invocation);
-                            holder.setT(result);
-                            holder.setEmpty(false);
-                            return result;
-                        }
-                    }).with(manager).start(nodeInfo, Propagation.REQUIRED, invocation);
-                } catch (Throwable e) {
-                    // 抛出异常，使外界能感知到
-                    log.error(e.getMessage(), e);
-                    holder.setEmpty(false);
-                    holder.setE(e);
-                }
-            }
-        }).start();
+        new Thread(new FilterRunnable(holder, invoker, invocation, manager)).start();
+        // 自旋，等待值被设置，volatile会使后面的值都被刷新，因此不用加锁.
         while (holder.isEmpty()) ;
         if (holder.getE() != null) {
             throw new RpcException(holder.getE());
@@ -87,19 +59,60 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
         return holder.getT();
     }
 
-
     /**
-     * @param invocation
-     * @return
+     * filter执行线程.
      */
-    private String[] getParamTypes(Invocation invocation) {
-        Object[] args = invocation.getArguments();
-        String[] params = new String[args.length];
-        for (int i = 0; i < args.length; i++) {
-            params[i] = args[i].getClass().getSimpleName();
+    private static class FilterRunnable implements Runnable {
+        private ResultHolder<Result> holder;
+        private Invoker<?> invoker;
+        private Invocation invocation;
+        private DitransactionManager manager;
+
+        public FilterRunnable(ResultHolder<Result> holder, Invoker<?> invoker, Invocation invocation, DitransactionManager manager) {
+            this.holder = holder;
+            this.invoker = invoker;
+            this.invocation = invocation;
+            this.manager = manager;
         }
 
-        return params;
-    }
+        @Override
+        public void run() {
+            try {
+                NodeInfo nodeInfo = NodeInfo.builder()
+                        .className(invoker.getInterface().getSimpleName())
+                        .host(InetAddress.getLocalHost().getHostAddress())
+                        .methodName(invocation.getMethodName())
+                        .paramTypes(getParamTypes(invocation))
+                        .status(DitranConstants.ZK_NODE_START_VALUE).build();
+                DitransactionWrapper.wrap(new Handler<Invocation, Result>() {
+                    @Override
+                    public Result handle(Invocation invocation) throws Throwable {
+                        Result result = invoker.invoke(invocation);
+                        holder.setT(result);
+                        holder.setEmpty(false);
+                        return result;
+                    }
+                }).with(manager).start(nodeInfo, Propagation.REQUIRED, invocation);
+            } catch (Throwable e) {
+                // 抛出异常，使外界能感知到
+                log.error(e.getMessage(), e);
+                holder.setEmpty(false);
+                holder.setE(e);
+            }
+        }
 
+        /**
+         * @param invocation
+         * @return
+         */
+        private String[] getParamTypes(Invocation invocation) {
+            Object[] args = invocation.getArguments();
+            String[] params = new String[args.length];
+            for (int i = 0; i < args.length; i++) {
+                params[i] = args[i].getClass().getSimpleName();
+            }
+
+            return params;
+        }
+    }
 }
