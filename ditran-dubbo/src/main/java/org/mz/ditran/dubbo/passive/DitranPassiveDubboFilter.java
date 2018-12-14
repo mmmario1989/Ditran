@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.Handler;
+import org.mz.ditran.common.entity.NodeInfo;
 import org.mz.ditran.common.entity.ResultHolder;
 import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.core.conf.DitranContainer;
@@ -18,6 +19,8 @@ import org.mz.ditran.dubbo.DitranDubboFilter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.concurrent.Executors;
 
 /**
@@ -39,13 +42,23 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
     }
 
     @Override
-    public Result doInvoke(final Invoker<?> invoker, final Invocation invocation) {
+    public Result doInvoke(final Invoker<?> invoker, final Invocation invocation) throws UnknownHostException {
         final String activePathStr = RpcContext.getContext().getAttachment(DitranConstants.ACTIVE_PATH_KEY);
         final ZkPath activePath = new ZkPath(activePathStr);
         final DitranContainer container = DitranContainer.getConfig(DitranPassiveContainer.class);
         PlatformTransactionManager platformTransactionManager = container.getTransactionManager();
         final DitransactionManager manager = new PassiveDitransactionManager(platformTransactionManager, container.getZkClient(), activePath);
         final ResultHolder<Result> holder = new ResultHolder<>();
+
+        // 构建Passive节点信息.
+        NodeInfo nodeInfo = NodeInfo.builder()
+                .className(invoker.getInterface().getSimpleName())
+                .host(InetAddress.getLocalHost().getHostAddress())
+                .methodName(invocation.getMethodName())
+                .paramTypes(getParamTypes(invocation))
+                .status(DitranConstants.ZK_NODE_START_VALUE).build();
+
+
         Executors.newFixedThreadPool(1).execute(new Runnable() {
             @Override
             public void run() {
@@ -58,7 +71,7 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
                             holder.setEmpty(false);
                             return result;
                         }
-                    }).with(manager).start(invocation.getMethodName(), Propagation.REQUIRED, invocation);
+                    }).with(manager).start(nodeInfo, Propagation.REQUIRED, invocation);
                 } catch (Throwable e) {
                     // 抛出异常，使外界能感知到
                     log.error(e.getMessage(), e);
@@ -72,6 +85,24 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
             throw new RpcException(holder.getE());
         }
         return holder.getT();
+    }
+
+
+    /**
+     *
+     *
+     *
+     * @param invocation
+     * @return
+     */
+    private String[] getParamTypes(Invocation invocation) {
+        Object[] args = invocation.getArguments();
+        String[] params = new String[args.length];
+        for (int i = 0; i < args.length; i++) {
+            params[i] = args[i].getClass().getSimpleName();
+        }
+
+        return params;
     }
 
 }

@@ -11,7 +11,11 @@ public abstract class DitranDubboFilter implements Filter {
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         if (isDitran()) {
-            return doInvoke(invoker, invocation);
+            try {
+                return doInvoke(invoker, invocation);
+            } catch (Exception e) {
+                throw new RpcException(e);
+            }
         }
         return invoker.invoke(invocation);
     }
@@ -24,8 +28,9 @@ public abstract class DitranDubboFilter implements Filter {
 
     /**
      * 业务逻辑处理.
+     *
      * @return
      */
-    public abstract Result doInvoke(Invoker<?> invoker, Invocation invocation);
+    public abstract Result doInvoke(Invoker<?> invoker, Invocation invocation) throws Exception;
 
 }
