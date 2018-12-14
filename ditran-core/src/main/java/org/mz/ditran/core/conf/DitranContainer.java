@@ -66,12 +66,12 @@ public abstract class DitranContainer implements ApplicationContextAware {
     }
 
     @PostConstruct
-    protected void init(){
+    protected void init() throws DitranZKException {
         check();
         initZk();
     }
 
-    private void initZk() {
+    private void initZk() throws DitranZKException {
         log.info("Ditran: zookeeper client init, server lists is: {}.", config.getServerLists());
 
         CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
