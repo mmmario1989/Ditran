@@ -1,9 +1,9 @@
 package org.mz.ditran.core;
 
 import lombok.extern.slf4j.Slf4j;
+import org.mz.ditran.common.Handler;
 import org.mz.ditran.common.exception.DitransactionException;
 import org.mz.ditran.core.blocking.Blocking;
-import org.mz.ditran.core.checker.Checker;
 
 import java.util.concurrent.*;
 
@@ -15,27 +15,35 @@ import java.util.concurrent.*;
  * @Date: 2018-12-14 19:40
  */
 @Slf4j
-public class BlockingChecker<T> implements Blocking<Checker<T>, Boolean> {
+public class BlockingHandler<PARAM, RES> implements Blocking<Handler<PARAM, RES>, RES> {
 
     private ExecutorService executor;
 
+    private PARAM p;
+
+    private RES defaultValue;
+
+    public BlockingHandler(PARAM p, RES defaultValue) {
+        this.p = p;
+        this.defaultValue = defaultValue;
+    }
 
     /**
      * 阻塞调用
-     * @param checker
+     * @param handler
      * @param timeout
      * @return
      * @throws Exception
      */
     @Override
-    public Boolean blocking(Checker<T> checker, long timeout) throws Exception {
+    public RES blocking(Handler<PARAM, RES> handler, long timeout) throws Exception {
         executor = Executors.newFixedThreadPool(1);
-        Future<Boolean> future = executor.submit(new BlockingTask<>(checker));
+        Future<RES> future = executor.submit(new BlockingTask<>(handler, p));
         try {
             return future.get(timeout, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             log.error("Blocking checker time out.");
-            return false;
+            return defaultValue;
         } catch (Exception e1) {
             throw new DitransactionException(e1);
         } finally {
@@ -48,20 +56,24 @@ public class BlockingChecker<T> implements Blocking<Checker<T>, Boolean> {
 
 
     /**
-     * 阻塞式任务.
-     * @param <T>
+     * 阻塞式任务
+     * @param <PARAM>
+     * @param <RES>
      */
-    private static class BlockingTask<T> implements Callable<Boolean> {
-        private Checker<T> checker;
+    private static class BlockingTask<PARAM, RES> implements Callable<RES> {
+        private Handler<PARAM, RES> handler;
 
-        public BlockingTask(Checker<T> checker) {
-            this.checker = checker;
+        private PARAM p;
+
+        public BlockingTask(Handler<PARAM, RES> handler, PARAM p) {
+            this.handler = handler;
+            this.p = p;
         }
 
         @Override
-        public Boolean call() throws Exception {
+        public RES call() throws Exception {
             try {
-                return checker.check();
+                return handler.handle(p);
             } catch (Throwable throwable) {
                 throw new DitransactionException(throwable);
             }
