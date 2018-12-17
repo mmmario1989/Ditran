@@ -16,12 +16,9 @@ import org.apache.zookeeper.data.ACL;
 import org.mz.ditran.common.exception.DitranZKException;
 import org.mz.ditran.core.zk.DitranZKClient;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
