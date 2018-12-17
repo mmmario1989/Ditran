@@ -1,5 +1,6 @@
 package org.mz.ditran.core.conf;
 
+import lombok.Setter;
 import org.mz.ditran.core.DitranAspect;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -11,13 +12,15 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 public class DitranActiveContainer extends DitranContainer {
 
+    @Setter
     private DitranAspect ditranAspect;
 
-
-    public DitranActiveContainer(DitranZKConfig zkConfig, PlatformTransactionManager transactionManager,DitranAspect ditranAspect) {
-        super(zkConfig, transactionManager);
+    public DitranActiveContainer(String zkServerList, DitranAspect ditranAspect) {
+        super(zkServerList);
         this.ditranAspect = ditranAspect;
     }
+
+    public DitranActiveContainer(){}
 
     @Override
     protected void check() {

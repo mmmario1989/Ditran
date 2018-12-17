@@ -1,6 +1,7 @@
 package org.mz.ditran.core.conf;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /**
@@ -15,8 +16,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Data
 public class DitranPassiveContainer extends DitranContainer {
 
-    public DitranPassiveContainer(DitranZKConfig config, PlatformTransactionManager transactionManager) {
-        super(config, transactionManager);
+    public DitranPassiveContainer(String zkServerList) {
+        super(zkServerList);
     }
 
+    public DitranPassiveContainer() {
+    }
 }

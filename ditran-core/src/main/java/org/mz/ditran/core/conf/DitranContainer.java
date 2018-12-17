@@ -2,7 +2,9 @@ package org.mz.ditran.core.conf;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
@@ -16,6 +18,7 @@ import org.apache.zookeeper.data.ACL;
 import org.mz.ditran.common.exception.DitranZKException;
 import org.mz.ditran.core.zk.DitranZKClient;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -38,19 +41,23 @@ public abstract class DitranContainer implements ApplicationContextAware {
 
     private static ApplicationContext context;
 
+    @Autowired
+    @Setter
     protected PlatformTransactionManager transactionManager;
 
     private CuratorFramework client;
 
     protected DitranZKClient ditranZKClient;
-
+    @Setter
     private DitranZKConfig config;
 
 
-    public DitranContainer(DitranZKConfig config, PlatformTransactionManager transactionManager) {
-        this.config = config;
-        this.transactionManager = transactionManager;
+    public DitranContainer(String zkServerList){
+        this.config = new DitranZKConfig();
+        this.config.setServerLists(zkServerList);
     }
+
+    public DitranContainer(){}
 
     /**
      * 获取zk客户端
