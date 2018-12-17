@@ -136,8 +136,8 @@ public abstract class DitranContainer implements ApplicationContextAware {
         if (config == null) {
             throw new IllegalArgumentException("Zk config is null!");
         }
-        if (StringUtils.isBlank(config.getServerLists()) || StringUtils.isBlank(config.getNamespace())) {
-            throw new IllegalArgumentException("Zk config missing server list or namespace!");
+        if (StringUtils.isBlank(config.getServerLists())) {
+            throw new IllegalArgumentException("Zk config missing server list!");
         }
         if(transactionManager==null){
             throw new IllegalArgumentException("transactionManager can not be null");

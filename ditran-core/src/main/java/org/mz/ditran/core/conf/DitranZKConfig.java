@@ -1,27 +1,37 @@
 package org.mz.ditran.core.conf;
 
-import lombok.Data;
-
-import java.beans.ConstructorProperties;
+import lombok.Getter;
+import lombok.Setter;
+import org.mz.ditran.common.DitranConstants;
 
 /**
  * @Author: jsonz
  * @Date: 2018-12-13 18:47
  */
-@Data
 public class DitranZKConfig {
-    private final String serverLists;
-    private final String namespace;
+    @Getter
+    private final String namespace = DitranConstants.NAMESPACE;
+    @Setter
+    @Getter
+    private String serverLists;
+    @Setter
+    @Getter
     private int baseSleepTimeMilliseconds = 1000;
+    @Setter
+    @Getter
     private int maxSleepTimeMilliseconds = 3000;
+    @Setter
+    @Getter
     private int maxRetries = 3;
+    @Setter
+    @Getter
     private int sessionTimeoutMilliseconds;
+    @Setter
+    @Getter
     private int connectionTimeoutMilliseconds;
+    @Setter
+    @Getter
     private String digest;
 
-    @ConstructorProperties({"serverLists", "namespace"})
-    public DitranZKConfig(String serverLists, String namespace) {
-        this.serverLists = serverLists;
-        this.namespace = namespace;
-    }
+
 }
