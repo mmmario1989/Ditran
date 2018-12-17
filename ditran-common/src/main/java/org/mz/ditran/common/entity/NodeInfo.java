@@ -26,6 +26,9 @@ public class NodeInfo {
 
     private String[] paramTypes;
 
+    public NodeInfo() {
+    }
+
     @Override
     public String toString() {
         return JSON.toJSONString(this);

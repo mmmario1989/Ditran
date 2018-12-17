@@ -10,8 +10,26 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ditran-sample-dubbo-active</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.mz</groupId>
+            <artifactId>ditran-sample-dubbo-passiveA</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mz</groupId>
+            <artifactId>ditran-sample-dubbo-passiveB</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
-    <packaging>war</packaging>
-
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

@@ -1,4 +1,4 @@
-package com.mz.ditran.sample.passiveA.config;
+package com.mz.ditran.sample.dubbo.passiveA;
 
 import org.mz.ditran.core.conf.DitranPassiveContainer;
 import org.springframework.beans.factory.annotation.Value;

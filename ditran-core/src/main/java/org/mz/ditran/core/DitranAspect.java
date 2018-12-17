@@ -3,6 +3,7 @@ package org.mz.ditran.core;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.DitranContext;
 import org.mz.ditran.common.Handler;
@@ -15,6 +16,7 @@ import org.mz.ditran.core.transaction.impl.ActiveDitransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Propagation;
 
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 
 /**
@@ -29,13 +31,13 @@ public class DitranAspect {
 
     @Around("@annotation(org.mz.ditran.core.DiTransactional))")
     public Object ditranAround(final ProceedingJoinPoint point) throws Throwable {
-        Class claz = point.getSignature().getDeclaringType();
+        Method method = ((MethodSignature)point.getSignature()).getMethod();
         Object[] args = point.getArgs();
         String[] paramTypes = new String[args.length];
         for (int i = 0; i < args.length; i++) {
-            paramTypes[i] = args.getClass().getSimpleName();
+            paramTypes[i] = args[i].getClass().getSimpleName();
         }
-        DiTransactional ditranAnn = (DiTransactional) claz.getAnnotation(DiTransactional.class);
+        DiTransactional ditranAnn =  method.getAnnotation(DiTransactional.class);
         Propagation propagation = ditranAnn.propagation();
         long timeout = ditranAnn.timeout();
         DitranContext.setTimeout(timeout);
@@ -44,7 +46,7 @@ public class DitranAspect {
         DitransactionManager manager = new ActiveDitransactionManager(platformTransactionManager, container.getZkClient());
         try {
             NodeInfo nodeInfo = NodeInfo.builder()
-                    .className(claz.getSimpleName())
+                    .className(point.getSignature().getDeclaringType().getSimpleName())
                     .host(InetAddress.getLocalHost().getHostAddress())
                     .methodName(point.getSignature().getName())
                     .paramTypes(paramTypes)
