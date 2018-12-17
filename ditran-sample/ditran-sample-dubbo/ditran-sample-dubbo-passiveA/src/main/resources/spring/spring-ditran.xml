@@ -5,12 +5,11 @@
 	                    http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     
-    <import resource="spring-datasource.xml" />
+
 
 
     <bean id="zkConfig" class="org.mz.ditran.core.conf.DitranZKConfig">
-        <constructor-arg name="serverLists" value="${job.zookeeper}"/>
-        <constructor-arg name="namespace" value="${job.namespace}"/>
+        <property name="serverLists" value="${job.zookeeper}"/>
     </bean>
 
     <bean id="ditranPassiveContainer" class="org.mz.ditran.core.conf.DitranPassiveContainer">

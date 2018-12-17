@@ -4,6 +4,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
        xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        		http://www.springframework.org/schema/beans/spring-beans.xsd
        		http://www.springframework.org/schema/context
@@ -11,19 +12,50 @@
        		http://www.springframework.org/schema/aop
        		http://www.springframework.org/schema/aop/spring-aop.xsd
             http://code.alibabatech.com/schema/dubbo
-            http://code.alibabatech.com/schema/dubbo/dubbo.xsd"
+            http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+            http://www.springframework.org/schema/tx
+            http://www.springframework.org/schema/tx/spring-tx.xsd"
     >
-
+    <context:component-scan base-package="org.mz.ditran.sample.dubbo.active"/>
     <!-- ======================================= -->
     <!-- 默认的注解映射的支持 -->
     <!-- ======================================= -->
     <context:annotation-config/>
     <!-- 启动对@AspectJ注解的支持  -->
     <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
 
     <dubbo:application name="ditran-sample-dubbo-active" owner="mz"/>
     <dubbo:registry  address="localhost:2181" protocol="zookeeper" />
     <dubbo:protocol  name="dubbo" port="20881" host="localhost"/>
 
+
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />      
+        <property name="url" value="jdbc:mysql://localhost:3306/ditran" />      
+        <property name="username" value="root" />      
+        <property name="password" value="1234" />      
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="globalRollbackOnParticipationFailure" value="false"/>
+    </bean>
+
+
+
+
+    <bean id="ditranAspect" class="org.mz.ditran.core.DitranAspect"/>
+
+    <bean id="zkConfig" class="org.mz.ditran.core.conf.DitranZKConfig">
+        <property name="serverLists" value="localost:2181"/>
+    </bean>
+
+    <bean id="ditranActiveContainer" class="org.mz.ditran.core.conf.DitranActiveContainer">
+        <constructor-arg name="zkConfig" ref="zkConfig"/>
+        <constructor-arg name="transactionManager" ref="transactionManager"/>
+        <constructor-arg name="ditranAspect" ref="ditranAspect"/>
+    </bean>
 
 </beans>

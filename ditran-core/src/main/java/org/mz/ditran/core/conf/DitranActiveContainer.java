@@ -14,8 +14,8 @@ public class DitranActiveContainer extends DitranContainer {
     private DitranAspect ditranAspect;
 
 
-    public DitranActiveContainer(DitranZKConfig config, PlatformTransactionManager transactionManager,DitranAspect ditranAspect) {
-        super(config, transactionManager);
+    public DitranActiveContainer(DitranZKConfig zkConfig, PlatformTransactionManager transactionManager,DitranAspect ditranAspect) {
+        super(zkConfig, transactionManager);
         this.ditranAspect = ditranAspect;
     }
 

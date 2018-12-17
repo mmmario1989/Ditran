@@ -8,14 +8,22 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <version>1.0-SNAPSHOT</version>
 
     <artifactId>ditran-core</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>org.mz</groupId>
             <artifactId>ditran-common</artifactId>
-            <version>${project.version}</version>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
         </dependency>
     </dependencies>
 </project>

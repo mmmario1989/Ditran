@@ -22,4 +22,5 @@
     <!-- 加载所有的spring配置 -->
     <import resource="classpath*:spring/spring-ditran.xml"/>
     <import resource="classpath*:spring/spring-dubbo-provider.xml"/>
+    <import resource="classpath*:spring/spring-datasource.xml" />
 </beans>
