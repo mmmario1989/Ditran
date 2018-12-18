@@ -1,4 +1,4 @@
-package com.mz.ditran.sample.dubbo.passiveA.service;
+package org.mz.ditran.sample.dubbo.passiveA.service;
 
 import java.math.BigDecimal;
 

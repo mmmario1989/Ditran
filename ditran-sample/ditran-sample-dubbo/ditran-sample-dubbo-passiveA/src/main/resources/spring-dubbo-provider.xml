@@ -11,6 +11,6 @@
     <dubbo:registry address="${dubbo.registry.address}"/>
     <dubbo:protocol port="${dubbo.protocol.port}"/>
 
-    <dubbo:service interface="com.mz.ditran.sample.dubbo.passiveA.service.PassiveAService" ref="passiveAService" retries="0" />
+    <dubbo:service interface="org.mz.ditran.sample.dubbo.passiveA.service.PassiveAService" ref="passiveAService" retries="0" />
 
 </beans>
