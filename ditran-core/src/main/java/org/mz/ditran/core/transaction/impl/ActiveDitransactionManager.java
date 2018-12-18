@@ -30,7 +30,7 @@ public class ActiveDitransactionManager extends DitransactionManagerAdapter {
 
     @Override
     public void begin(NodeInfo nodeInfo, Propagation propagation) throws Exception {
-        String path = zkClient.getClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath(zkClient.getPrefix()+"/"+nodeInfo.getClassName()+"_"+nodeInfo.getMethodName());
+        String path = zkClient.getClient().create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT_SEQUENTIAL).forPath(ZkPath.PREFIX+nodeInfo.getClassName()+"_"+nodeInfo.getMethodName());
         ZkPath zkPath = new ZkPath(path);
         zkPath.setNode(DitranConstants.ACTIVE_NODE);
         DitranContext.setZkPath(zkPath);

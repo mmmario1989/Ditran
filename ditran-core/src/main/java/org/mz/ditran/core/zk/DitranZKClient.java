@@ -17,19 +17,12 @@ import org.mz.ditran.core.conf.DitranZKConfig;
 @Slf4j
 public class DitranZKClient {
 
-    private static final String ROOT = "/";
-
     @Getter
     private CuratorFramework client;
-    @Getter
-    private String prefix;
 
-    private DitranZKConfig config;
 
-    public DitranZKClient(CuratorFramework client, DitranZKConfig config) {
+    public DitranZKClient(CuratorFramework client) {
         this.client = client;
-        this.prefix = ROOT + config.getNamespace();
-        this.config = config;
     }
 
     /**

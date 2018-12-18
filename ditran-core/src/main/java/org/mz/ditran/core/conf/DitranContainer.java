@@ -103,7 +103,7 @@ public abstract class DitranContainer implements ApplicationContextAware {
         this.client = builder.build();
         this.client.start();
 
-        this.ditranZKClient = new DitranZKClient(this.client, config);
+        this.ditranZKClient = new DitranZKClient(this.client);
 
         try {
             if (!this.client.blockUntilConnected(this.config.getMaxSleepTimeMilliseconds() * this.config.getMaxRetries(), TimeUnit.MILLISECONDS)) {

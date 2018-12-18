@@ -35,7 +35,7 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
 
     @Override
     public void begin(NodeInfo nodeInfo, Propagation propagation) throws Exception {
-        ZkPath zkPath = new ZkPath(activePath.getNamespace(), activePath.getTransaction());
+        ZkPath zkPath = new ZkPath(activePath.getFullPath());
         zkPath.setNode(DitranConstants.PASSIVE_NODE);
         TransactionStatus transactionStatus = beginLocal(propagation);
         ditranInfo = DitranInfo.builder()
@@ -48,7 +48,7 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
     @Override
     public boolean listen() throws Exception {
         // passive端需要阻塞，直到active端写zk成功。如果超时直接返回false，进行回滚.
-        return new BlockingHandler<String, Boolean>(activePath.getFullPath(), false).blocking(new Handler<String, Boolean>() {
+        return new BlockingHandler<>(activePath.getFullPath(), false).blocking(new Handler<String, Boolean>() {
             @Override
             public Boolean handle(String key) throws Throwable {
                 NodeInfo nodeInfo;
@@ -66,6 +66,5 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
     @Override
     public void commit() throws Exception {
         transactionManager.commit(ditranInfo.getTransactionStatus());
-        super.prepare();
     }
 }
