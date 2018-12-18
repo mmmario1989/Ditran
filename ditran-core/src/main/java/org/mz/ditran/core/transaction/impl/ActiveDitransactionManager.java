@@ -43,6 +43,12 @@ public class ActiveDitransactionManager extends DitransactionManagerAdapter {
     }
 
     @Override
+    public void regist() throws Exception {
+        super.regist();
+        DitranContext.setZkPath(ditranInfo.getZkPath());
+    }
+
+    @Override
     public void prepare() throws Exception {
         //do nothing
     }
