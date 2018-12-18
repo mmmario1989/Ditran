@@ -51,8 +51,7 @@ public class DitransactionWrapper<PARAM, RES> {
             if (DitranConstants.ZK_NODE_SUCCESS_VALUE.equals(info.getStatus())) {
                 transactionManager.commit();
             } else {
-                log.error(String.format("Node [%s] failed.", info.toString()));
-                throw new DitransactionException("other node failed");
+                throw new DitransactionException("Other node failed:"+info.toString());
             }
             return res;
         } catch (Throwable e) {
