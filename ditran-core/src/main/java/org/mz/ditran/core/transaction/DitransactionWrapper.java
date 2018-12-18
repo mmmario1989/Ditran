@@ -1,6 +1,7 @@
 package org.mz.ditran.core.transaction;
 
 import lombok.extern.slf4j.Slf4j;
+import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.Handler;
 import org.mz.ditran.common.entity.NodeInfo;
 import org.mz.ditran.common.exception.DitransactionException;
@@ -46,10 +47,11 @@ public class DitransactionWrapper<PARAM, RES> {
         try {
             RES res = handler.handle(param);
             transactionManager.prepare();
-            boolean succeed = transactionManager.listen();
-            if (succeed) {
+            NodeInfo info = transactionManager.listen();
+            if (DitranConstants.ZK_NODE_SUCCESS_VALUE.equals(info.getStatus())) {
                 transactionManager.commit();
             } else {
+                log.error(String.format("Node [%s] failed.", info.toString()));
                 throw new DitransactionException("other node failed");
             }
             return res;

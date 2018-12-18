@@ -17,7 +17,7 @@ public interface DitransactionManager  {
 
     void prepare() throws Exception;
 
-    boolean listen() throws Exception;
+    NodeInfo listen() throws Exception;
 
     void commit() throws Exception;
 

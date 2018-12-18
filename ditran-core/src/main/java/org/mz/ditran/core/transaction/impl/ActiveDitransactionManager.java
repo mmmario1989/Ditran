@@ -54,7 +54,7 @@ public class ActiveDitransactionManager extends DitransactionManagerAdapter {
     }
 
     @Override
-    public boolean listen() throws Exception{
+    public NodeInfo listen() throws Exception{
         List<String> childs = zkClient.getClient().getChildren().forPath(ditranInfo.getZkPath().getTransactionPath());
         for (String child : childs) {
             ZkPath childPath = new ZkPath(ditranInfo.getZkPath().getTransactionPath()+"/"+child);
@@ -63,10 +63,12 @@ public class ActiveDitransactionManager extends DitransactionManagerAdapter {
             }
             NodeInfo nodeInfo = zkClient.getNodeInfo(childPath.getFullPath());
             if(!DitranConstants.ZK_NODE_SUCCESS_VALUE.equals(nodeInfo.getStatus())){
-                return false;
+                return nodeInfo;
             }
         }
-        return true;
+
+        // 遍历完了返回成功节点.构造一个成功节点
+        return NodeInfo.builder().status(DitranConstants.ZK_NODE_SUCCESS_VALUE).build();
     }
 
     @Override

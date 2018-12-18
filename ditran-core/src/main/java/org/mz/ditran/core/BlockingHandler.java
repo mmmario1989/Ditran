@@ -21,11 +21,8 @@ public class BlockingHandler<PARAM, RES> implements Blocking<Handler<PARAM, RES>
 
     private PARAM p;
 
-    private RES defaultValue;
-
-    public BlockingHandler(PARAM p, RES defaultValue) {
+    public BlockingHandler(PARAM p) {
         this.p = p;
-        this.defaultValue = defaultValue;
     }
 
     /**
@@ -41,10 +38,8 @@ public class BlockingHandler<PARAM, RES> implements Blocking<Handler<PARAM, RES>
         Future<RES> future = executor.submit(new BlockingTask<>(handler, p));
         try {
             return future.get(timeout, TimeUnit.MILLISECONDS);
-        } catch (TimeoutException e) {
-            log.error("Blocking checker time out.");
-            return defaultValue;
         } catch (Exception e1) {
+            log.error("Blocking handler exception.Msg:{}", e1.getMessage());
             throw new DitransactionException(e1);
         } finally {
             future.cancel(true);

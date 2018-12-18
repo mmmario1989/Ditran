@@ -46,18 +46,18 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
     }
 
     @Override
-    public boolean listen() throws Exception {
+    public NodeInfo listen() throws Exception {
         // passive端需要阻塞，直到active端写zk成功。如果超时直接返回false，进行回滚.
-        return new BlockingHandler<>(activePath.getFullPath(), false).blocking(new Handler<String, Boolean>() {
+        return new BlockingHandler<String, NodeInfo>(activePath.getFullPath()).blocking(new Handler<String, NodeInfo>() {
             @Override
-            public Boolean handle(String key) throws Throwable {
+            public NodeInfo handle(String key) throws Throwable {
                 NodeInfo nodeInfo;
                 do {
                     TimeUnit.MILLISECONDS.sleep(100);
                     nodeInfo = zkClient.getNodeInfo(key);
                 } while (!DitranConstants.ZK_NODE_SUCCESS_VALUE.equals(nodeInfo.getStatus()));
 
-                return true;
+                return nodeInfo;
             }
         }, timeout);
     }
