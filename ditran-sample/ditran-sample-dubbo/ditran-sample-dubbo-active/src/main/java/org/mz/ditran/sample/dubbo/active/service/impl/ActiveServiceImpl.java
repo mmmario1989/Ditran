@@ -33,10 +33,4 @@ public class ActiveServiceImpl implements ActiveService {
         jdbcTemplate.update("update t_active_accoun set amount = amount - ? where account=?", amount.multiply(BigDecimal.valueOf(2)),account);
     }
 
-    @Data
-    public static class Account{
-        private String account;
-        private BigDecimal amount;
-
-    }
 }
