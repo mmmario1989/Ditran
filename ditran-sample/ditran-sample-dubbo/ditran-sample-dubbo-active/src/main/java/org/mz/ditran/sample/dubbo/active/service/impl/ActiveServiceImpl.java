@@ -1,7 +1,6 @@
 package org.mz.ditran.sample.dubbo.active.service.impl;
 
 import com.mz.ditran.sample.dubbo.passiveA.service.PassiveAService;
-import lombok.Data;
 import org.mz.ditran.core.DiTransactional;
 import org.mz.ditran.sample.dubbo.active.service.ActiveService;
 import org.mz.ditran.sample.dubbo.passiveB.service.PassiveBService;
@@ -33,10 +32,4 @@ public class ActiveServiceImpl implements ActiveService {
         jdbcTemplate.update("update t_active_account set amount = amount - ? where account=?", amount.multiply(BigDecimal.valueOf(2)),account);
     }
 
-    @Data
-    public static class Account{
-        private String account;
-        private BigDecimal amount;
-
-    }
 }
