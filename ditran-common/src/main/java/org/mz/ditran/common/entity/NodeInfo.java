@@ -29,6 +29,14 @@ public class NodeInfo {
     public NodeInfo() {
     }
 
+    public NodeInfo(String host, String className, String methodName, String status, String[] paramTypes) {
+        this.host = host;
+        this.className = className;
+        this.methodName = methodName;
+        this.status = status;
+        this.paramTypes = paramTypes;
+    }
+
     @Override
     public String toString() {
         return JSON.toJSONString(this);
