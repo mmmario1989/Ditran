@@ -51,9 +51,8 @@ public class ActiveDitransactionManager extends DitransactionManagerAdapter {
     public boolean listen() throws Exception{
         List<String> childs = zkClient.getClient().getChildren().forPath(ditranInfo.getZkPath().getTransactionPath());
         for (String child : childs) {
-            ZkPath childPath = new ZkPath(child);
-            String node = childPath.getNode();
-            if(node.startsWith(DitranConstants.ACTIVE_NODE)){
+            ZkPath childPath = new ZkPath(ditranInfo.getZkPath().getTransactionPath()+"/"+child);
+            if(child.startsWith(DitranConstants.ACTIVE_NODE)){
                 continue;
             }
             NodeInfo nodeInfo = zkClient.getNodeInfo(childPath.getFullPath());
