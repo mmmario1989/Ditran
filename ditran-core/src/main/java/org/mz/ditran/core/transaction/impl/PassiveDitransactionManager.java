@@ -1,6 +1,7 @@
 package org.mz.ditran.core.transaction.impl;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.mz.ditran.common.blocking.BlockingOpt;
 import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.blocking.Condition;
@@ -9,6 +10,7 @@ import org.mz.ditran.common.entity.DitranInfo;
 import org.mz.ditran.common.entity.NodeInfo;
 import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.common.exception.DitranZKException;
+import org.mz.ditran.common.exception.DitransactionException;
 import org.mz.ditran.core.transaction.DitransactionManagerAdapter;
 import org.mz.ditran.core.zk.DitranZKClient;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -24,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  * @Description:
  */
 @Data
+@Slf4j
 public class PassiveDitransactionManager extends DitransactionManagerAdapter {
 
     private ZkPath activePath;
@@ -69,8 +72,15 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
              * @return
              * @throws DitranZKException
              */
-            public NodeInfo recursive(String path) throws DitranZKException {
+            public NodeInfo recursive(String path) throws Exception {
                 String result = zkClient.get(path);
+
+                // 如果节点的值不是以NAMESPACE开头的事务节点，则退出递归，防止无穷递归
+                if (!result.startsWith(DitranConstants.NAMESPACE)) {
+                    log.error("The node value is invalid.Path:[{}], Value:[{}]", result, path);
+                    throw new DitransactionException(String.format("The node value is invalid.Path:[%s], Value:[%s]", result, path));
+                }
+
                 if (DitranConstants.NULL.equals(result)) {
                     return zkClient.getNodeInfo(path + ZkPath.PREFIX + DitranConstants.ACTIVE_NODE);
                 }
