@@ -2,19 +2,14 @@ package org.mz.ditran.core.transaction.impl;
 
 import org.mz.ditran.common.BlockingChecker;
 import org.mz.ditran.common.DitranConstants;
-import org.mz.ditran.common.Handler;
 import org.mz.ditran.common.entity.DitranInfo;
 import org.mz.ditran.common.entity.NodeInfo;
 import org.mz.ditran.common.entity.ZkPath;
-import org.mz.ditran.core.BlockingHandler;
-import org.mz.ditran.core.blocking.Condition;
 import org.mz.ditran.core.transaction.DitransactionManagerAdapter;
 import org.mz.ditran.core.zk.DitranZKClient;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: mario
@@ -64,18 +59,6 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
                     }
                 }
         );
-        // passive端需要阻塞，直到active端写zk成功。如果超时直抛出异常，进行回滚.
-        return new BlockingHandler<String, NodeInfo>(activePath.getFullPath()).blocking(new Handler<String, NodeInfo>() {
-            @Override
-            public NodeInfo handle(String key) throws Throwable {
-                return zkClient.getNodeInfo(key);
-            }
-        }, new Condition<NodeInfo>() {
-            @Override
-            public boolean onCondition(NodeInfo info) {
-                return DitranConstants.ZK_NODE_SUCCESS_VALUE.equals(info.getStatus());
-            }
-        }, timeout);
     }
 
 

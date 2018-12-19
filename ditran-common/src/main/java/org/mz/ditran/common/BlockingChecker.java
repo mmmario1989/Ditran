@@ -5,7 +5,7 @@ import org.mz.ditran.common.exception.DitransactionException;
 import java.util.concurrent.*;
 
 /**
- * @Author: mario
+ * @Author: jsonz , mario
  * @Email: mmmario@foxmail.com
  * @Date: 2018-12-19 10:57 AM
  * @Description: Block to checking the result that Fetcher returns and return when Checker returns true.
