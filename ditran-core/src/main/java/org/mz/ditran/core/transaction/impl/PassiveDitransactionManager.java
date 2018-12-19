@@ -8,6 +8,7 @@ import org.mz.ditran.common.blocking.Opt;
 import org.mz.ditran.common.entity.DitranInfo;
 import org.mz.ditran.common.entity.NodeInfo;
 import org.mz.ditran.common.entity.ZkPath;
+import org.mz.ditran.common.exception.DitranZKException;
 import org.mz.ditran.core.transaction.DitransactionManagerAdapter;
 import org.mz.ditran.core.zk.DitranZKClient;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -54,7 +55,27 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
         return new BlockingOpt<NodeInfo>().blocking(new Opt<NodeInfo>() {
             @Override
             public NodeInfo operation() throws Exception {
-                return zkClient.getNodeInfo(activePath.getFullPath());
+                NodeInfo info = zkClient.getNodeInfo(activePath.getFullPath());
+                if (DitranConstants.ZK_NODE_FAIL_VALUE.equals(info.getStatus()) ||
+                        DitranConstants.ZK_NODE_START_VALUE.equals(info.getStatus())) {
+                    return info;
+                }
+                return recursive(activePath.getTransactionPath());
+            }
+
+            /**
+             * 递归查询父节点
+             * @param path
+             * @return
+             * @throws DitranZKException
+             */
+            public NodeInfo recursive(String path) throws DitranZKException {
+                String result = zkClient.get(path);
+                if (DitranConstants.NULL.equals(result)) {
+                    return zkClient.getNodeInfo(path + "/" + DitranConstants.ACTIVE_NODE);
+                }
+
+                return recursive(result);
             }
         }, new Condition<NodeInfo>() {
             @Override
