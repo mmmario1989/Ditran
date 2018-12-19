@@ -6,9 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.CreateMode;
+import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.entity.NodeInfo;
 import org.mz.ditran.common.exception.DitranZKException;
-import org.mz.ditran.core.conf.DitranZKConfig;
 
 /**
  * @Author: jsonz
@@ -91,6 +91,12 @@ public class DitranZKClient {
     public NodeInfo getNodeInfo(String fullPath) throws DitranZKException {
         String res = this.get(fullPath);
         return NodeInfo.parse(res);
+    }
+
+    public String createTransaction(NodeInfo nodeInfo,String parent) throws Exception {
+        return client.create()
+                .withMode(CreateMode.PERSISTENT_SEQUENTIAL)
+                .forPath(nodeInfo.getTransactionId(),(parent==null? DitranConstants.NULL:parent).getBytes(Charsets.UTF_8));
     }
 
 

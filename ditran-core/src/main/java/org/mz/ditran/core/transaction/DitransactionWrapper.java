@@ -43,7 +43,7 @@ public class DitransactionWrapper<PARAM, RES> {
 
     public RES start(NodeInfo nodeInfo, Propagation propagation, PARAM param) throws Throwable {
         transactionManager.begin(nodeInfo,propagation);
-        transactionManager.regist();
+        transactionManager.register();
         try {
             RES res = handler.handle(param);
             transactionManager.prepare();

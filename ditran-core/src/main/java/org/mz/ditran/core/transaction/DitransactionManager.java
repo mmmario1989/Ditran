@@ -13,7 +13,7 @@ public interface DitransactionManager  {
 
     void begin(NodeInfo nodeInfo, Propagation propagation) throws Exception;
 
-    void regist() throws Exception;
+    void register() throws Exception;
 
     void prepare() throws Exception;
 

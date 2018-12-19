@@ -30,7 +30,7 @@ public abstract class DitransactionManagerAdapter implements DitransactionManage
     }
 
     @Override
-    public void regist() throws Exception {
+    public void register() throws Exception {
         String path = zkClient.getClient().create()
                 .withMode(CreateMode.PERSISTENT_SEQUENTIAL)
                 .forPath(ditranInfo.getZkPath().getFullPath(), ditranInfo.getNodeInfo().toByte());

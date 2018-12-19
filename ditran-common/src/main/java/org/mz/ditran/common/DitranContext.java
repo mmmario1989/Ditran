@@ -18,14 +18,14 @@ public class DitranContext {
 
     private long timeout;
 
-    private String parentTransaction;
+    private String parentTransactionId;
 
     public static void setZkPath(ZkPath zkPath){
         get().zkPath = zkPath;
     }
 
-    public static void setParentTransaction(String parentTransaction){
-        get().parentTransaction = parentTransaction;
+    public static void setParentTransactionId(String parentTransactionId){
+        get().parentTransactionId = parentTransactionId;
     }
 
     public static void setTimeout(long timeout){
@@ -44,4 +44,5 @@ public class DitranContext {
     public static void clear(){
         HOLDER.remove();
     }
+
 }
