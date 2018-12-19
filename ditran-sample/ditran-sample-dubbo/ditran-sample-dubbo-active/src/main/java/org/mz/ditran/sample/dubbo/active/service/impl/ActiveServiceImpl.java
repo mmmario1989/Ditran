@@ -26,10 +26,19 @@ public class ActiveServiceImpl implements ActiveService {
 
     @Override
     @DiTransactional
-    public void transMoney(String account, BigDecimal amount) {
+    public void transMoney2AB(BigDecimal amount) {
         passiveAService.receiveMoney(amount);
         passiveBService.receiveMoney(amount);
-        jdbcTemplate.update("update t_active_account set amount = amount - ? where account=?", amount.multiply(BigDecimal.valueOf(2)),account);
+        jdbcTemplate.update("update t_active_account set amount = amount - ? where account='zhangsan'", amount.multiply(BigDecimal.valueOf(2)));
     }
+
+    @Override
+    @DiTransactional
+    public void transMoney2A2B(BigDecimal amount) {
+        passiveAService.passMoney(amount);
+        jdbcTemplate.update("update t_active_account set amount = amount - ? where account='zhangsan'", amount);
+    }
+
+
 
 }

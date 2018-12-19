@@ -15,7 +15,7 @@ import java.math.BigDecimal;
  * @Author: jsonz
  * @Date: 2018-12-17 10:30
  */
-@ImportResource(locations = {"classpath:spring-dubbo-consumer.xml"})
+@ImportResource(locations = {"classpath:spring-dubbo.xml"})
 @SpringBootApplication
 @RestController
 public class Application {
@@ -27,9 +27,13 @@ public class Application {
         SpringApplication app = new SpringApplication(Application.class);
         app.run(args);
     }
-    @GetMapping("/{account}/{amount}")
-    public void trans(@PathVariable String account, @PathVariable BigDecimal amount){
-        activeService.transMoney(account,amount);
+    @GetMapping("/trans2ab/{amount}")
+    public void trans2AB(@PathVariable BigDecimal amount){
+        activeService.transMoney2AB(amount);
+    }
+    @GetMapping("/trans2a2b/{amount}")
+    public void trans2A2B(@PathVariable BigDecimal amount){
+        activeService.transMoney2A2B(amount);
     }
 
 

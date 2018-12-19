@@ -20,4 +20,6 @@ public class PassiveBServiceImpl implements PassiveBService {
     public int receiveMoney( BigDecimal amount) {
         return jdbcTemplate.update("update t_passive_b_account set amount = amount + ? where account = 'wangwu'",amount);
     }
+
+
 }

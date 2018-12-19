@@ -8,4 +8,7 @@ import java.math.BigDecimal;
  */
 public interface PassiveAService {
     int receiveMoney(BigDecimal amount);
+
+    int passMoney(BigDecimal amount);
+
 }
