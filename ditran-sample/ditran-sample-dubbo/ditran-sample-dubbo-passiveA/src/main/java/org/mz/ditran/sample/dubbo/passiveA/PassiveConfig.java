@@ -16,4 +16,5 @@ public class PassiveConfig {
     public DitranPassiveContainer ditranPassiveContainer(@Value("${ditran.zookeeper}") String zkServserList){
         return new DitranPassiveContainer(zkServserList);
     }
+
 }
