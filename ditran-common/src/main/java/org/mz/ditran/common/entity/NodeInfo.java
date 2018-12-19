@@ -59,7 +59,7 @@ public class NodeInfo {
         return JSON.parseObject(json,NodeInfo.class);
     }
 
-    public String getTransactionId(){
-        return ZkPath.PREFIX+this.getClassName()+"_"+this.getMethodName();
+    public String getTransactionPath(){
+        return ZkPath.PREFIX+DitranConstants.NAMESPACE+"_"+this.getClassName()+"_"+this.getMethodName()+"_";
     }
 }
