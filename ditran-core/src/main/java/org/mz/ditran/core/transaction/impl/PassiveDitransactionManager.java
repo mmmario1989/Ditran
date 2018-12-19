@@ -1,7 +1,9 @@
 package org.mz.ditran.core.transaction.impl;
 
-import org.mz.ditran.common.BlockingChecker;
+import org.mz.ditran.common.blocking.BlockingOpt;
 import org.mz.ditran.common.DitranConstants;
+import org.mz.ditran.common.blocking.Condition;
+import org.mz.ditran.common.blocking.Opt;
 import org.mz.ditran.common.entity.DitranInfo;
 import org.mz.ditran.common.entity.NodeInfo;
 import org.mz.ditran.common.entity.ZkPath;
@@ -45,20 +47,17 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
     @Override
     public NodeInfo listen() throws Exception {
         // passive端需要阻塞，直到active端写zk成功。如果超时直接返回false，进行回滚.
-        return new BlockingChecker<NodeInfo>(timeout).check(
-                new BlockingChecker.Fetcher<NodeInfo>() {
-                    @Override
-                    public NodeInfo fetch() throws Exception {
-                        return zkClient.getNodeInfo(activePath.getFullPath());
-                    }
-                },
-                new BlockingChecker.Checker<NodeInfo>() {
-                    @Override
-                    public boolean check(NodeInfo nodeInfo) throws Exception {
-                        return !DitranConstants.ZK_NODE_START_VALUE.equals(nodeInfo.getStatus());
-                    }
-                }
-        );
+        return new BlockingOpt<NodeInfo>().blocking(new Opt<NodeInfo>() {
+            @Override
+            public NodeInfo operation() throws Exception {
+                return zkClient.getNodeInfo(activePath.getFullPath());
+            }
+        }, new Condition<NodeInfo>() {
+            @Override
+            public boolean onCondition(NodeInfo info) {
+                return !DitranConstants.ZK_NODE_START_VALUE.equals(info.getStatus());
+            }
+        });
     }
 
 

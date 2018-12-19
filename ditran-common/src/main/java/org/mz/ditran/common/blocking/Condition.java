@@ -1,4 +1,4 @@
-package org.mz.ditran.core.blocking;
+package org.mz.ditran.common.blocking;
 
 /**
  * @Author: jsonz
