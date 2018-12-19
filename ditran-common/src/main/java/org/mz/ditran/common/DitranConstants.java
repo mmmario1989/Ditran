@@ -14,4 +14,5 @@ public class DitranConstants {
     public static final String ZK_NODE_FAIL_VALUE = "failed";
     public static final String ACTIVE_PATH_KEY = "active_path_key";
     public static final String TIMEOUT_KEY = "timeout_key";
+    public static final String NULL = "NULL";
 }
