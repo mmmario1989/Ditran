@@ -72,10 +72,10 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
             public NodeInfo recursive(String path) throws DitranZKException {
                 String result = zkClient.get(path);
                 if (DitranConstants.NULL.equals(result)) {
-                    return zkClient.getNodeInfo(path + "/" + DitranConstants.ACTIVE_NODE);
+                    return zkClient.getNodeInfo(path + ZkPath.PREFIX + DitranConstants.ACTIVE_NODE);
                 }
 
-                return recursive(result);
+                return recursive(ZkPath.PREFIX+result);
             }
         }, new Condition<NodeInfo>() {
             @Override

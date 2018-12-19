@@ -2,6 +2,8 @@ package org.mz.ditran.common.entity;
 
 import lombok.Data;
 
+import java.io.File;
+
 /**
  * @Author: mario
  * @Email: mmmario@foxmail.com
@@ -11,7 +13,7 @@ import lombok.Data;
 @Data
 public class ZkPath {
 
-    public static final String PREFIX ="/";
+    public static final String PREFIX = File.separator;
 
     private String transaction;
 
