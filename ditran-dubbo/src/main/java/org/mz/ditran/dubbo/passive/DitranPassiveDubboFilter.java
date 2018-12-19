@@ -6,6 +6,7 @@ import com.alibaba.dubbo.rpc.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.mz.ditran.common.DitranConstants;
+import org.mz.ditran.common.DitranContext;
 import org.mz.ditran.common.Handler;
 import org.mz.ditran.common.entity.NodeInfo;
 import org.mz.ditran.common.entity.ResultHolder;
@@ -39,6 +40,13 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
         return StringUtils.isNotBlank(RpcContext.getContext().getAttachment(DitranConstants.ACTIVE_PATH_KEY));
     }
 
+    /**
+     * 执行事务invoke
+     * @param invoker
+     * @param invocation
+     * @return
+     * @throws Exception
+     */
     @Override
     public Result doInvoke(final Invoker<?> invoker, final Invocation invocation) throws Exception {
         final String activePathStr = RpcContext.getContext().getAttachment(DitranConstants.ACTIVE_PATH_KEY);
@@ -77,12 +85,16 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
         @Override
         public void run() {
             try {
+                // 设置parent事务Id
+                DitranContext.setParentTransactionId(((PassiveDitransactionManager) manager).getActivePath().getTransaction());
+                // 构建nodeInfo
                 NodeInfo nodeInfo = NodeInfo.builder()
                         .className(invoker.getInterface().getSimpleName())
                         .host(InetAddress.getLocalHost().getHostAddress())
                         .methodName(invocation.getMethodName())
                         .paramTypes(getParamTypes(invocation))
                         .status(DitranConstants.ZK_NODE_START_VALUE).build();
+                // 启动事务管理器
                 DitransactionWrapper.wrap(new Handler<Invocation, Result>() {
                     @Override
                     public Result handle(Invocation invocation) throws Throwable {
@@ -105,10 +117,9 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
          * @return
          */
         private String[] getParamTypes(Invocation invocation) {
-            Object[] args = invocation.getArguments();
-            String[] params = new String[args.length];
-            for (int i = 0; i < args.length; i++) {
-                params[i] = args[i].getClass().getSimpleName();
+            String[] params = new String[invocation.getArguments().length];
+            for (int i = 0; i < invocation.getArguments().length; i++) {
+                params[i] = invocation.getArguments()[i].getClass().getSimpleName();
             }
 
             return params;
