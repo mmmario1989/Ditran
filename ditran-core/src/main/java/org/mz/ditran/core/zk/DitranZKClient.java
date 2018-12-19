@@ -77,12 +77,8 @@ public class DitranZKClient {
      */
     public String get(final String key) throws DitranZKException {
         try {
-            if (isExisted(key)) {
-                byte[] bytes = client.getData().forPath(key);
-                return new String(bytes);
-            }
-
-            return StringUtils.EMPTY;
+            byte[] bytes = client.getData().forPath(key);
+            return new String(bytes);
         } catch (Exception e) {
             throw new DitranZKException(String.format("Get data from zk failed.Path: %s.", key), e);
         }
