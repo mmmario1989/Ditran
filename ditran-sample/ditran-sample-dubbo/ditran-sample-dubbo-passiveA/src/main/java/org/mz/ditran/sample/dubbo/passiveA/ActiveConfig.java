@@ -1,8 +1,7 @@
-package org.mz.ditran.sample.dubbo.active;
+package org.mz.ditran.sample.dubbo.passiveA;
 
 import org.mz.ditran.core.DitranAspect;
 import org.mz.ditran.core.conf.DitranActiveContainer;
-import org.mz.ditran.core.conf.DitranPassiveContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

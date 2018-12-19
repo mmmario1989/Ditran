@@ -11,7 +11,13 @@
 
     <artifactId>ditran-sample-dubbo-passiveA</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>org.mz</groupId>
+            <artifactId>ditran-sample-dubbo-passiveB</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>

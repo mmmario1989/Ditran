@@ -7,5 +7,7 @@ import java.math.BigDecimal;
  * @Date: 2018-12-17 14:17
  */
 public interface ActiveService {
-    void transMoney(String account, BigDecimal amount);
+    void transMoney2AB(BigDecimal amount);
+
+    void transMoney2A2B(BigDecimal amount);
 }
