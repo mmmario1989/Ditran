@@ -17,7 +17,7 @@ import java.util.concurrent.*;
 @Slf4j
 public class BlockingHandler<PARAM, RES> implements Blocking<Handler<PARAM, RES>, RES> {
 
-    private ExecutorService executor;
+    private static final ExecutorService executor = Executors.newCachedThreadPool();
 
     private PARAM p;
 
@@ -34,7 +34,6 @@ public class BlockingHandler<PARAM, RES> implements Blocking<Handler<PARAM, RES>
      */
     @Override
     public RES blocking(Handler<PARAM, RES> handler, long timeout) throws Exception {
-        executor = Executors.newFixedThreadPool(1);
         Future<RES> future = executor.submit(new BlockingTask<>(handler, p));
         try {
             return future.get(timeout, TimeUnit.MILLISECONDS);
@@ -43,9 +42,6 @@ public class BlockingHandler<PARAM, RES> implements Blocking<Handler<PARAM, RES>
             throw new DitransactionException(e1);
         } finally {
             future.cancel(true);
-            if (executor != null) {
-                executor.shutdown();
-            }
         }
     }
 
