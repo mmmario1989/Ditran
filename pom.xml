@@ -13,7 +13,6 @@
         <module>ditran-common</module>
         <module>ditran-sample</module>
         <module>ditran-core</module>
-        <module>ditran-all</module>
     </modules>
 
     <properties>
@@ -83,14 +82,25 @@
 
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.2.1</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>dmall.com</id>
+            <url>http://nexus.dmall.com:8081/nexus/content/repositories/snapshots/</url>
+        </repository>
+    </distributionManagement>
 </project>
