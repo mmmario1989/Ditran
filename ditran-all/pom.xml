@@ -11,7 +11,7 @@
     <artifactId>ditran</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>ditran</name>
+    <name>ditran-all</name>
 
     <dependencies>
         <dependency>
@@ -65,11 +65,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>dmall.com</id>
-            <url>http://nexus.dmall.com:8081/nexus/content/repositories/snapshots/</url>
-        </repository>
-    </distributionManagement>
 </project>
