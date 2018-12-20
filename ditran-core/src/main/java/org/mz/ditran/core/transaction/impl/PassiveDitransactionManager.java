@@ -78,7 +78,7 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
                     return zkClient.getNodeInfo(path + ZkPath.PREFIX + DitranConstants.ACTIVE_NODE);
                 }
                 // 如果节点的值不是以NAMESPACE开头的事务节点，则退出递归，防止无穷递归
-                if (!result.startsWith(DitranConstants.NAMESPACE)) {
+                if (!result.startsWith(ZkPath.PREFIX + DitranConstants.NAMESPACE)) {
                     log.error("The node value is invalid.Path:[{}], Value:[{}]", result, path);
                     throw new DitransactionException(String.format("The node value is invalid.Path:[%s], Value:[%s]", result, path));
                 }
