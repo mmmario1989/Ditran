@@ -85,7 +85,7 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
                     return zkClient.getNodeInfo(path + ZkPath.PREFIX + DitranConstants.ACTIVE_NODE);
                 }
 
-                return recursive(ZkPath.PREFIX+result);
+                return recursive(ZkPath.PREFIX + result);
             }
         }, new Condition<NodeInfo>() {
             @Override
