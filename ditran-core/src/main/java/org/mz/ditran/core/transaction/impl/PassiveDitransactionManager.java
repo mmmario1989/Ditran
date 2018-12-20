@@ -82,7 +82,7 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
                     log.error("The node value is invalid.Path:[{}], Value:[{}]", result, path);
                     throw new DitransactionException(String.format("The node value is invalid.Path:[%s], Value:[%s]", result, path));
                 }
-                return recursive(ZkPath.PREFIX+result);
+                return recursive(ZkPath.PREFIX + result);
             }
         }, new Condition<NodeInfo>() {
             @Override
