@@ -42,7 +42,7 @@ public class ActiveDitransactionManager extends DitransactionManagerAdapter {
 
     @Override
     public void register() throws Exception {
-        zkClient.getClient().create().forPath(ditranInfo.getZkPath().getFullPath(),ditranInfo.getNodeInfo().toByte());
+        zkClient.getClient().create().forPath(ditranInfo.getZkPath().getFullPath(),ditranInfo.getNodeInfo().toBytes());
     }
 
     @Override

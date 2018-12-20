@@ -42,7 +42,7 @@ public class NodeInfo {
         return JSON.toJSONString(this);
     }
 
-    public byte[] toByte(){
+    public byte[] toBytes(){
         return this.toString().getBytes(Charsets.UTF_8);
     }
 
