@@ -13,6 +13,7 @@
         <module>ditran-common</module>
         <module>ditran-sample</module>
         <module>ditran-core</module>
+        <module>ditran-all</module>
     </modules>
 
     <properties>
