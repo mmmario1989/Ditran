@@ -15,24 +15,33 @@ public class ZkPath {
 
     public static final String PREFIX = File.separator;
 
-    private String transaction;
+    private String fullMethodName;
 
-    private String node;
+    private String active;
+
+    private String passive;
 
     public ZkPath(String path) {
         String[] elements = path.trim().split(PREFIX);
-        transaction = elements[1];
+        fullMethodName = elements[1];
         if(elements.length>2){
-            node = elements[2];
+            active = elements[2];
+        }
+        if(elements.length>3){
+            passive = elements[3];
         }
     }
 
-    public String getFullPath(){
-        return buildPath(transaction,node);
+    public String getActivePath(){
+        return buildPath(fullMethodName,active);
+
+    }
+    public String getPassivePath(){
+        return buildPath(fullMethodName,active,passive);
     }
 
     public String getTransactionPath(){
-        return buildPath(transaction);
+        return buildPath(fullMethodName,active);
     }
 
     private String buildPath(String...element){
