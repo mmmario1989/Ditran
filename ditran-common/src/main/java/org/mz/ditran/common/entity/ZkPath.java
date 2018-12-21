@@ -40,10 +40,6 @@ public class ZkPath {
         return buildPath(fullMethodName,active,passive);
     }
 
-    public String getTransactionPath(){
-        return buildPath(fullMethodName,active);
-    }
-
     private String buildPath(String...element){
         StringBuilder path = new StringBuilder();
         for (String s : element) {
