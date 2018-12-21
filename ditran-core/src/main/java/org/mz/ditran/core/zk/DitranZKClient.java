@@ -92,6 +92,7 @@ public class DitranZKClient {
     public String createTransaction(NodeInfo nodeInfo) throws Exception {
         return client.create()
                 .creatingParentsIfNeeded()
+                .withMode(CreateMode.PERSISTENT_SEQUENTIAL)
                 .forPath(nodeInfo.getTransactionPath());
     }
 }

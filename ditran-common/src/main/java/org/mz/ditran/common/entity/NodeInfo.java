@@ -1,9 +1,11 @@
 package org.mz.ditran.common.entity;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.google.common.base.Charsets;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.mz.ditran.common.DitranConstants;
 
 /**
@@ -12,7 +14,8 @@ import org.mz.ditran.common.DitranConstants;
  * @Date: 2018-12-14 5:39 PM
  * @Description:
  */
-@Data
+@Getter
+@Setter
 @Builder
 public class NodeInfo {
 
@@ -27,6 +30,18 @@ public class NodeInfo {
     private String[] paramTypes;
 
     private String pTransactionPath;
+
+    public NodeInfo(String host, String className, String methodName, String status, String[] paramTypes, String pTransactionPath) {
+        this.host = host;
+        this.className = className;
+        this.methodName = methodName;
+        this.status = status;
+        this.paramTypes = paramTypes;
+        this.pTransactionPath = pTransactionPath;
+    }
+
+    public NodeInfo() {
+    }
 
     @Override
     public String toString() {
@@ -50,6 +65,7 @@ public class NodeInfo {
         return JSON.parseObject(json,NodeInfo.class);
     }
 
+    @JSONField(serialize = false)
     public String getTransactionPath(){
         return ZkPath.PREFIX+className+"."+methodName+ZkPath.PREFIX+DitranConstants.ACTIVE_NODE;
     }
