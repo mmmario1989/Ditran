@@ -46,10 +46,11 @@ public class DitranAspect {
         DitransactionManager manager = new ActiveDitransactionManager(platformTransactionManager, container.getZkClient());
         try {
             NodeInfo nodeInfo = NodeInfo.builder()
-                    .className(point.getSignature().getDeclaringType().getSimpleName())
+                    .className(point.getSignature().getDeclaringType().getName())
                     .host(InetAddress.getLocalHost().getHostAddress())
                     .methodName(point.getSignature().getName())
                     .paramTypes(paramTypes)
+                    .pTransactionPath(DitranContext.get().getPTransactionPath())
                     .status(DitranConstants.ZK_NODE_START_VALUE).build();
             return DitransactionWrapper.wrap(new Handler<Object, Object>() {
                 @Override

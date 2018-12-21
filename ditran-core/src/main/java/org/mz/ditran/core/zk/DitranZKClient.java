@@ -89,11 +89,10 @@ public class DitranZKClient {
         return NodeInfo.parse(res);
     }
 
-    public String createTransaction(NodeInfo nodeInfo,String parent) throws Exception {
+    public String createTransaction(NodeInfo nodeInfo) throws Exception {
         return client.create()
+                .creatingParentsIfNeeded()
                 .withMode(CreateMode.PERSISTENT_SEQUENTIAL)
-                .forPath(nodeInfo.getTransactionPath(),(parent==null? DitranConstants.NULL:parent).getBytes(Charsets.UTF_8));
+                .forPath(nodeInfo.getTransactionPath());
     }
-
-
 }
