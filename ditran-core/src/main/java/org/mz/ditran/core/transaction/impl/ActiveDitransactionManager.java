@@ -28,7 +28,7 @@ public class ActiveDitransactionManager extends DitransactionManagerAdapter {
 
     @Override
     public void begin(NodeInfo nodeInfo, Propagation propagation) throws Exception {
-        String path = zkClient.createTransaction(nodeInfo, DitranContext.get().getParentTransactionId());
+        String path = zkClient.createTransaction(nodeInfo, DitranContext.get().getpTransactionPath());
         ZkPath zkPath = new ZkPath(path);
         zkPath.setNode(DitranConstants.ACTIVE_NODE);
         DitranContext.setZkPath(zkPath);

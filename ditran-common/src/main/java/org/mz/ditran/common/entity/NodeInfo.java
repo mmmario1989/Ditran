@@ -26,6 +26,8 @@ public class NodeInfo {
 
     private String[] paramTypes;
 
+    private String pTransactionPath;
+
     public NodeInfo() {
     }
 
@@ -60,6 +62,6 @@ public class NodeInfo {
     }
 
     public String getTransactionPath(){
-        return ZkPath.PREFIX+DitranConstants.NAMESPACE+"_"+this.getClassName()+"_"+this.getMethodName()+"_";
+        return ZkPath.PREFIX+className+"."+methodName+DitranConstants.ACTIVE_NODE;
     }
 }
