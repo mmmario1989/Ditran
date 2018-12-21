@@ -51,6 +51,6 @@ public class NodeInfo {
     }
 
     public String getTransactionPath(){
-        return ZkPath.PREFIX+className+"."+methodName+DitranConstants.ACTIVE_NODE;
+        return ZkPath.PREFIX+className+"."+methodName+ZkPath.PREFIX+DitranConstants.ACTIVE_NODE;
     }
 }

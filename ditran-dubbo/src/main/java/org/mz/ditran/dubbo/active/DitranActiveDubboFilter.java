@@ -28,7 +28,7 @@ public class DitranActiveDubboFilter extends DitranDubboFilter {
     @Override
     public Result doInvoke(Invoker<?> invoker, Invocation invocation) {
         Map<String,String> attach = RpcContext.getContext().getAttachments();
-        attach.put(DitranConstants.ACTIVE_PATH_KEY,DitranContext.get().getZkPath().getFullPath());
+        attach.put(DitranConstants.ACTIVE_PATH_KEY,DitranContext.get().getZkPath().getActivePath());
         attach.put(DitranConstants.TIMEOUT_KEY,String.valueOf(DitranContext.get().getTimeout()));
         return invoker.invoke(invocation);
     }

@@ -3,6 +3,7 @@ package org.mz.ditran.core.transaction.impl;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.zookeeper.CreateMode;
 import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.blocking.BlockingOpt;
 import org.mz.ditran.common.blocking.Condition;
@@ -53,6 +54,20 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
     }
 
     @Override
+    public void register() throws Exception {
+        String path = zkClient.getClient().create()
+                .withMode(CreateMode.PERSISTENT_SEQUENTIAL)
+                .forPath(ditranInfo.getZkPath().getPassivePath(), ditranInfo.getNodeInfo().toBytes());
+        ditranInfo.setZkPath(new ZkPath(path));
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        zkClient.update(ditranInfo.getZkPath().getPassivePath(), ditranInfo.getNodeInfo().setSucceed().toString());
+    }
+
+
+    @Override
     public NodeInfo listen() throws Exception {
         // passive端需要阻塞，直到active端写zk成功。如果超时直接返回false，进行回滚.
         return new BlockingOpt<NodeInfo>().blocking(new Opt<NodeInfo>() {
@@ -91,5 +106,12 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
     @Override
     public void commit() throws Exception {
         transactionManager.commit(ditranInfo.getTransactionStatus());
+    }
+
+
+    @Override
+    public void rollback() throws DitranZKException {
+        transactionManager.rollback(ditranInfo.getTransactionStatus());
+        zkClient.update(ditranInfo.getZkPath().getPassivePath(), ditranInfo.getNodeInfo().setFailed().toString());
     }
 }
