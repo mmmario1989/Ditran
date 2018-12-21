@@ -24,8 +24,8 @@ public class DitranContext {
         get().zkPath = zkPath;
     }
 
-    public static void setParentTransactionId(String parentTransactionId){
-        get().pTransactionPath = parentTransactionId;
+    public static void setPTransactionPath(String pTransactionPath){
+        get().pTransactionPath = pTransactionPath;
     }
 
     public static void setTimeout(long timeout){

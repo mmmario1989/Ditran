@@ -86,7 +86,7 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
         public void run() {
             try {
                 // 设置parent事务Id
-                DitranContext.setParentTransactionId(((PassiveDitransactionManager) manager).getActivePath().getActivePath());
+                DitranContext.setPTransactionPath(((PassiveDitransactionManager) manager).getActivePath().getActivePath());
                 // 构建nodeInfo
                 NodeInfo nodeInfo = NodeInfo.builder()
                         .className(invoker.getInterface().getName())
