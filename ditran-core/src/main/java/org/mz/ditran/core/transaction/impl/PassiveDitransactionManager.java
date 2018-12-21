@@ -2,15 +2,15 @@ package org.mz.ditran.core.transaction.impl;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.mz.ditran.common.blocking.BlockingOpt;
+import org.apache.commons.lang3.StringUtils;
 import org.mz.ditran.common.DitranConstants;
+import org.mz.ditran.common.blocking.BlockingOpt;
 import org.mz.ditran.common.blocking.Condition;
 import org.mz.ditran.common.blocking.Opt;
 import org.mz.ditran.common.entity.DitranInfo;
 import org.mz.ditran.common.entity.NodeInfo;
 import org.mz.ditran.common.entity.ZkPath;
 import org.mz.ditran.common.exception.DitranZKException;
-import org.mz.ditran.common.exception.DitransactionException;
 import org.mz.ditran.core.transaction.DitransactionManagerAdapter;
 import org.mz.ditran.core.zk.DitranZKClient;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -42,8 +42,8 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
 
     @Override
     public void begin(NodeInfo nodeInfo, Propagation propagation) throws Exception {
-        ZkPath zkPath = new ZkPath(activePath.getFullPath());
-        zkPath.setNode(DitranConstants.PASSIVE_NODE);
+        ZkPath zkPath = new ZkPath(activePath.getActivePath());
+        zkPath.setPassive(DitranConstants.PASSIVE_NODE);
         TransactionStatus transactionStatus = beginLocal(propagation);
         ditranInfo = DitranInfo.builder()
                 .transactionStatus(transactionStatus)
@@ -58,12 +58,12 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
         return new BlockingOpt<NodeInfo>().blocking(new Opt<NodeInfo>() {
             @Override
             public NodeInfo operation() throws Exception {
-                NodeInfo info = zkClient.getNodeInfo(activePath.getFullPath());
+                NodeInfo info = zkClient.getNodeInfo(activePath.getActivePath());
                 if (DitranConstants.ZK_NODE_FAIL_VALUE.equals(info.getStatus()) ||
                         DitranConstants.ZK_NODE_START_VALUE.equals(info.getStatus())) {
                     return info;
                 }
-                return recursive(activePath.getTransactionPath());
+                return recursive(activePath.getActivePath());
             }
 
             /**
@@ -73,16 +73,11 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
              * @throws DitranZKException
              */
             public NodeInfo recursive(String path) throws Exception {
-                String result = zkClient.get(path);
-                if (DitranConstants.NULL.equals(result)) {
-                    return zkClient.getNodeInfo(path + ZkPath.PREFIX + DitranConstants.ACTIVE_NODE);
+                NodeInfo result = zkClient.getNodeInfo(path);
+                if (StringUtils.isBlank(result.getPTransactionPath())) {
+                    return result;
                 }
-                // 如果节点的值不是以NAMESPACE开头的事务节点，则退出递归，防止无穷递归
-                if (!result.startsWith(DitranConstants.NAMESPACE)) {
-                    log.error("The node value is invalid.Path:[{}], Value:[{}]", result, path);
-                    throw new DitransactionException(String.format("The node value is invalid.Path:[%s], Value:[%s]", result, path));
-                }
-                return recursive(ZkPath.PREFIX + result);
+                return recursive(result.getPTransactionPath());
             }
         }, new Condition<NodeInfo>() {
             @Override

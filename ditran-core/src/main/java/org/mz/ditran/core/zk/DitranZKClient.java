@@ -94,6 +94,4 @@ public class DitranZKClient {
                 .withMode(CreateMode.PERSISTENT_SEQUENTIAL)
                 .forPath(nodeInfo.getTransactionPath(),(parent==null? DitranConstants.NULL:parent).getBytes(Charsets.UTF_8));
     }
-
-
 }
