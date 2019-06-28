@@ -66,11 +66,11 @@ public class BlockingOpt<RES> implements Blocking<Opt<RES>, Condition<RES>, RES>
         private void await() throws InterruptedException {
             if (cnt < 20) {
                 Thread.yield();
-                System.out.println(String.format("await cnt[%d]: yield", cnt));
+//                System.out.println(String.format("await cnt[%d]: yield", cnt));
             } else {
                 long millis = 100 + (cnt - 20) / 3 * 100;
                 Thread.sleep(millis);
-                System.out.println(String.format("await cnt[%d]: %dms", cnt, millis));
+//                System.out.println(String.format("await cnt[%d]: %dms", cnt, millis));
             }
             cnt++;
         }
