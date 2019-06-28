@@ -59,7 +59,7 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
 
         new Thread(new FilterRunnable(holder, invoker, invocation, manager)).start();
         // 自旋，等待值被设置，volatile会使后面的值都被刷新，因此不用加锁.
-        while (holder.isEmpty()) ;
+        while (holder.isEmpty()) Thread.yield();
         if (holder.getE() != null) {
             throw new RpcException(holder.getE());
         }
@@ -95,14 +95,11 @@ public class DitranPassiveDubboFilter extends DitranDubboFilter {
                         .paramTypes(getParamTypes(invocation))
                         .status(DitranConstants.ZK_NODE_START_VALUE).build();
                 // 启动事务管理器
-                DitransactionWrapper.wrap(new Handler<Invocation, Result>() {
-                    @Override
-                    public Result handle(Invocation invocation) throws Throwable {
-                        Result result = invoker.invoke(invocation);
-                        holder.setT(result);
-                        holder.setEmpty(false);
-                        return result;
-                    }
+                DitransactionWrapper.wrap((Handler<Invocation, Result>) invocation -> {
+                    Result result = invoker.invoke(invocation);
+                    holder.setT(result);
+                    holder.setEmpty(false);
+                    return result;
                 }).with(manager).start(nodeInfo, Propagation.REQUIRED, invocation);
             } catch (Throwable e) {
                 // 抛出异常，使外界能感知到

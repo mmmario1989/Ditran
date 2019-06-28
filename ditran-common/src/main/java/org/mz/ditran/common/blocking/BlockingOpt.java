@@ -37,6 +37,7 @@ public class BlockingOpt<RES> implements Blocking<Opt<RES>, Condition<RES>, RES>
 
     /**
      * 阻塞式任务
+     *
      * @param <RES>
      */
     private static class BlockingTask<RES> implements Callable<RES> {
@@ -44,7 +45,9 @@ public class BlockingOpt<RES> implements Blocking<Opt<RES>, Condition<RES>, RES>
 
         private Condition<RES> condition;
 
-        public BlockingTask(Opt<RES> opt, Condition<RES> condition) {
+        private int cnt = 0;
+
+        private BlockingTask(Opt<RES> opt, Condition<RES> condition) {
             this.opt = opt;
             this.condition = condition;
         }
@@ -53,10 +56,29 @@ public class BlockingOpt<RES> implements Blocking<Opt<RES>, Condition<RES>, RES>
         public RES call() throws Exception {
             RES res = opt.operation();
             while (!condition.onCondition(res)) {
-                Thread.sleep(100);
+//                Thread.sleep(100);
+                await();
                 res = opt.operation();
             }
             return res;
         }
+
+        private void await() throws InterruptedException {
+            if (cnt < 20) {
+                Thread.yield();
+                System.out.println(String.format("await cnt[%d]: yield", cnt));
+            } else {
+                long millis = 100 + (cnt - 20) / 3 * 100;
+                Thread.sleep(millis);
+                System.out.println(String.format("await cnt[%d]: %dms", cnt, millis));
+            }
+            cnt++;
+        }
+
+    }
+
+    public static void main(String[] args) throws Exception {
+        new BlockingOpt().blocking(() -> 1, o -> false,5,TimeUnit.SECONDS);
+
     }
 }

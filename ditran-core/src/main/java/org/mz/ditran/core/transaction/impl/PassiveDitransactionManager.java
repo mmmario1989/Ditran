@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.zookeeper.CreateMode;
 import org.mz.ditran.common.DitranConstants;
 import org.mz.ditran.common.blocking.BlockingOpt;
-import org.mz.ditran.common.blocking.Condition;
 import org.mz.ditran.common.blocking.Opt;
 import org.mz.ditran.common.entity.DitranInfo;
 import org.mz.ditran.common.entity.NodeInfo;
@@ -94,12 +93,7 @@ public class PassiveDitransactionManager extends DitransactionManagerAdapter {
                 }
                 return recursive(result.getPTransactionPath());
             }
-        }, new Condition<NodeInfo>() {
-            @Override
-            public boolean onCondition(NodeInfo info) {
-                return !DitranConstants.ZK_NODE_START_VALUE.equals(info.getStatus());
-            }
-        }, timeout, TimeUnit.MILLISECONDS);
+        }, info -> !DitranConstants.ZK_NODE_START_VALUE.equals(info.getStatus()), timeout, TimeUnit.MILLISECONDS);
     }
 
 
