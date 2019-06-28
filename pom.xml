@@ -98,10 +98,4 @@
             </plugin>
         </plugins>
     </build>
-    <distributionManagement>
-        <repository>
-            <id>dmall.com</id>
-            <url>http://nexus.dmall.com:8081/nexus/content/repositories/snapshots/</url>
-        </repository>
-    </distributionManagement>
 </project>
